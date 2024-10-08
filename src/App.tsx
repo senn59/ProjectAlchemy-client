@@ -1,9 +1,10 @@
 import './App.css'
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {IssueList} from "@/components/issues/IssueList.tsx";
 import {ENDPOINTS} from "@/endpoints.ts";
 import {ThemeProvider} from "@/components/shadcn/theme-provider.tsx";
+import {DataTable} from "@/issues/data-table.tsx";
+import {columns} from "@/issues/columns.tsx";
 
 export interface IIssue {
     name: string
@@ -19,9 +20,7 @@ function App() {
     return (
         <>
             <ThemeProvider defaultTheme={"dark"}>
-                <div className={"issues-container"}>
-                    <IssueList issues={issues}/>
-                </div>
+                <DataTable columns={columns} data={issues} />
             </ThemeProvider>
         </>
     )
