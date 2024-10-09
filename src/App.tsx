@@ -6,17 +6,19 @@ import {ThemeProvider} from "@/components/shadcn/theme-provider.tsx";
 import {DataTable} from "@/issues/data-table.tsx";
 import {columns} from "@/issues/columns.tsx";
 
-export interface IIssue {
+export interface IIssuePreview {
     id: number
     name: string
-    description?: string
     type: string //TODO: make enum for type
+}
+export interface IIssue extends IIssuePreview{
+    description: string
 }
 
 function App() {
-    const [issues, setIssues] = useState<IIssue[]>([]);
+    const [issues, setIssues] = useState<IIssuePreview[]>([]);
     useEffect(() => {
-        axios.get<IIssue[]>(ENDPOINTS.ISSUES)
+        axios.get<IIssuePreview[]>(ENDPOINTS.ISSUES)
             .then(res => setIssues(res.data))
     })
     return (
