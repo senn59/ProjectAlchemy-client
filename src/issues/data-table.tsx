@@ -15,12 +15,14 @@ import {
 } from "@/components/ui/table"
 import {
     Sheet,
-    SheetContent,
+    SheetContent, SheetDescription,
     SheetHeader,
 } from "@/components/ui/sheet"
 
 import {useState} from "react";
-import {IIssue} from "@/App.tsx";
+import {IIssue, IIssuePreview} from "@/App.tsx";
+import axios from "axios";
+import {ENDPOINTS} from "@/endpoints.ts";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -37,13 +39,14 @@ export function DataTable<TData, TValue>({columns, data,}: DataTableProps<TData,
         getCoreRowModel: getCoreRowModel(),
     })
 
-    const openRow = (row: Row<TData>) => {
+    const openRow = async (row: Row<TData>) => {
         console.log("Open row")
         table.toggleAllPageRowsSelected(false)
         row.toggleSelected()
         if (!row.getIsSelected()) {
             setIsOpenSheet(true)
-            setIsSelectedRow(row.original as IIssue)
+            const rowData = row.original as IIssuePreview;
+            setIsSelectedRow(await getIssueData(rowData.id))
         }
     }
 
@@ -53,14 +56,22 @@ export function DataTable<TData, TValue>({columns, data,}: DataTableProps<TData,
         setIsSelectedRow(null)
     }
 
+    const getIssueData = async (id: number): Promise<IIssue> => {
+        console.log(id);
+       return axios.get<IIssue>(`${ENDPOINTS.ISSUES}/${id}`).then(res => res.data)
+    }
+
     return (
         <div className="rounded-md border">
             <Sheet open={isOpenSheet} onOpenChange={handleSheetChange}>
-                <SheetContent>
-                    {selectedRow == null ? <p>Loading</p> :
-                        <SheetHeader>{selectedRow.name}</SheetHeader>
-                    }
-                </SheetContent>
+                {selectedRow !== null && (
+                    <>
+                        <SheetContent>
+                            <SheetHeader>{selectedRow.name}</SheetHeader>
+                            <SheetDescription>{selectedRow.description}</SheetDescription>
+                        </SheetContent>
+                    </>
+                )}
             </Sheet>
             <Table>
                 <TableHeader>
@@ -90,7 +101,7 @@ export function DataTable<TData, TValue>({columns, data,}: DataTableProps<TData,
                                 onClick={() => openRow(row)}
                             >
                                 {row.getVisibleCells().map((cell) => (
-                                    <TableCell key={cell.id}>
+                                    <TableCell key={cell.id} width={cell.column.columnDef.size}>
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </TableCell>
                                 ))}
