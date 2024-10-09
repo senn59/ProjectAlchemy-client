@@ -3,11 +3,15 @@ import {IIssue} from "@/App.tsx";
 
 export const columns: ColumnDef<IIssue>[] = [
     {
-        accessorKey: "name",
-        header: "Name"
+        accessorKey: "id",
+        header: "Id"
     },
     {
-        accessorKey: "description",
-        header: "Description"
+        accessorKey: "type",
+        header: "Type"
+    },
+    {
+        accessorKey: "name",
+        header: "Name"
     },
 ]

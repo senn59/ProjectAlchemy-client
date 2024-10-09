@@ -7,8 +7,10 @@ import {DataTable} from "@/issues/data-table.tsx";
 import {columns} from "@/issues/columns.tsx";
 
 export interface IIssue {
+    id: number
     name: string
     description?: string
+    type: string //TODO: make enum for type
 }
 
 function App() {
