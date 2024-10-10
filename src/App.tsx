@@ -9,10 +9,16 @@ import {columns} from "@/issues/columns.tsx";
 export interface IIssuePreview {
     id: number
     name: string
-    type: string //TODO: make enum for type
+    type: IssueType
 }
 export interface IIssue extends IIssuePreview{
     description: string
+}
+
+export enum IssueType {
+    Task = "Task",
+    UserStory = "UserStory",
+    Bug = "Bug",
 }
 
 function App() {
@@ -20,10 +26,10 @@ function App() {
     useEffect(() => {
         axios.get<IIssuePreview[]>(ENDPOINTS.ISSUES)
             .then(res => setIssues(res.data))
-    })
+    }, [])
     return (
         <>
-            <ThemeProvider defaultTheme={"dark"}>
+            <ThemeProvider defaultTheme={"light"}>
                 <DataTable columns={columns} data={issues} />
             </ThemeProvider>
         </>

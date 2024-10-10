@@ -16,7 +16,7 @@ import {
 import {
     Sheet,
     SheetContent, SheetDescription,
-    SheetHeader,
+    SheetHeader, SheetTitle,
 } from "@/components/ui/sheet"
 
 import {useState} from "react";
@@ -65,12 +65,12 @@ export function DataTable<TData, TValue>({columns, data,}: DataTableProps<TData,
         <div className="rounded-md border">
             <Sheet open={isOpenSheet} onOpenChange={handleSheetChange}>
                 {selectedRow !== null && (
-                    <>
-                        <SheetContent>
-                            <SheetHeader>{selectedRow.name}</SheetHeader>
+                    <SheetContent>
+                        <SheetHeader>
+                            <SheetTitle>{selectedRow.name}</SheetTitle>
                             <SheetDescription>{selectedRow.description}</SheetDescription>
-                        </SheetContent>
-                    </>
+                        </SheetHeader>
+                    </SheetContent>
                 )}
             </Sheet>
             <Table>
