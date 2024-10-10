@@ -5,6 +5,7 @@ import {ENDPOINTS} from "@/endpoints.ts";
 import {ThemeProvider} from "@/components/shadcn/theme-provider.tsx";
 import {DataTable} from "@/issues/data-table.tsx";
 import {columns} from "@/issues/columns.tsx";
+import {Toaster} from "@/components/ui/toaster.tsx";
 
 export interface IIssuePreview {
     id: number
@@ -30,6 +31,7 @@ function App() {
     return (
         <>
             <ThemeProvider defaultTheme={"light"}>
+                <Toaster />
                 <DataTable columns={columns} data={issues} />
             </ThemeProvider>
         </>
