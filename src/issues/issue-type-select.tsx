@@ -47,8 +47,8 @@ export default function IssueTypeSelect(props: IssueTypeSelectProps) {
             <SelectContent>
                 {Object.keys(IssueType)
                     .filter(key => isNaN(Number(key)))
-                    .map(t => (
-                        <SelectItem value={t}>{t}</SelectItem>
+                    .map((type, index) => (
+                        <SelectItem value={type} key={index}>{type}</SelectItem>
                     ))}
             </SelectContent>
         </Select>
