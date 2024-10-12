@@ -40,7 +40,6 @@ export function DataTable<TData, TValue>({columns, data,}: DataTableProps<TData,
     })
 
     const openRow = async (row: Row<TData>) => {
-        console.log("Open row")
         table.toggleAllPageRowsSelected(false)
         row.toggleSelected()
         if (!row.getIsSelected()) {
@@ -57,7 +56,6 @@ export function DataTable<TData, TValue>({columns, data,}: DataTableProps<TData,
     }
 
     const getIssueData = async (id: number): Promise<IIssue> => {
-        console.log(id);
        return axios.get<IIssue>(`${ENDPOINTS.ISSUES}/${id}`).then(res => res.data)
     }
 
