@@ -23,6 +23,8 @@ import {useState} from "react";
 import {IIssue, IIssuePreview} from "@/App.tsx";
 import axios from "axios";
 import {ENDPOINTS} from "@/endpoints.ts";
+import {Button} from "@/components/ui/button.tsx";
+import {Label} from "@/components/ui/label.tsx";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -65,9 +67,14 @@ export function DataTable<TData, TValue>({columns, data,}: DataTableProps<TData,
                 {selectedRow !== null && (
                     <SheetContent>
                         <SheetHeader>
-                            <SheetTitle>{selectedRow.name}</SheetTitle>
-                            <SheetDescription>{selectedRow.description}</SheetDescription>
+                            <SheetTitle>Issue {selectedRow.id}</SheetTitle>
                         </SheetHeader>
+                        <div className={"mt-10"}>
+                            <div className={"flex flex-col space-x-2 space-y-3"}>
+                                <Label>Name</Label>
+                                <Button variant={"ghost"} className={"justify-start text-lg"}>{selectedRow.name}</Button>
+                            </div>
+                        </div>
                     </SheetContent>
                 )}
             </Sheet>
