@@ -30,7 +30,7 @@ function App() {
     }, [])
     return (
         <>
-            <ThemeProvider defaultTheme={"light"}>
+            <ThemeProvider defaultTheme={"dark"}>
                 <Toaster />
                 <DataTable columns={columns} data={issues} />
             </ThemeProvider>
