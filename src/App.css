@@ -1,9 +1,9 @@
-.issue-container {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 30px;
-}
-.issues-container {
-  display: flex;
-  flex-direction: column;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .sheet-field-cnt {
+    @apply flex flex-col space-y-3 justify-start
+  }
 }

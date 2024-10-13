@@ -70,9 +70,19 @@ export function DataTable<TData, TValue>({columns, data,}: DataTableProps<TData,
                             <SheetTitle>Issue {selectedRow.id}</SheetTitle>
                         </SheetHeader>
                         <div className={"mt-10"}>
-                            <div className={"flex flex-col space-x-2 space-y-3"}>
-                                <Label>Name</Label>
-                                <Button variant={"ghost"} className={"justify-start text-lg"}>{selectedRow.name}</Button>
+                            <div className={"sheet-field-cnt"}>
+                                <Label className={"pl-1"}>Name</Label>
+                                <Button variant={"ghost"}
+                                        className={"justify-start text-lg p-2"}>{selectedRow.name}</Button>
+                            </div>
+                            <div className={"sheet-field-cnt mt-10"}>
+                                <Label className={"pl-1"}>Description</Label>
+                                <Button variant={"ghost"}
+                                        className={`justify-start p-2`}>
+                                    <p className={selectedRow.description ? "" : "opacity-50"}>
+                                        {selectedRow.description ? selectedRow.description : "Add description..."}
+                                    </p>
+                                </Button>
                             </div>
                         </div>
                     </SheetContent>
@@ -82,7 +92,7 @@ export function DataTable<TData, TValue>({columns, data,}: DataTableProps<TData,
                 <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => {
+                        {headerGroup.headers.map((header) => {
                                 return (
                                     <TableHead key={header.id}>
                                         {header.isPlaceholder
