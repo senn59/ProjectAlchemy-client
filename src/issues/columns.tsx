@@ -13,7 +13,7 @@ export const columns: ColumnDef<IIssuePreview>[] = [
         header: "Type",
         size: 0,
         cell:({ row }) => (
-            <IssueTypeSelect issuePreview={row.original} />
+            <IssueTypeSelect currentType={row.original.type} issueId={row.original.id} silent={false} />
         )
     },
     {
