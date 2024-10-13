@@ -15,8 +15,9 @@ import {
 } from "@/components/ui/table"
 import {
     Sheet,
-    SheetContent, SheetDescription,
-    SheetHeader, SheetTitle,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
 } from "@/components/ui/sheet"
 
 import {useState} from "react";
@@ -25,6 +26,7 @@ import axios from "axios";
 import {ENDPOINTS} from "@/endpoints.ts";
 import {Button} from "@/components/ui/button.tsx";
 import {Label} from "@/components/ui/label.tsx";
+import IssueTypeSelect from "@/issues/issue-type-select.tsx";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -58,7 +60,7 @@ export function DataTable<TData, TValue>({columns, data,}: DataTableProps<TData,
     }
 
     const getIssueData = async (id: number): Promise<IIssue> => {
-       return axios.get<IIssue>(`${ENDPOINTS.ISSUES}/${id}`).then(res => res.data)
+        return axios.get<IIssue>(`${ENDPOINTS.ISSUES}/${id}`).then(res => res.data)
     }
 
     return (
@@ -83,6 +85,10 @@ export function DataTable<TData, TValue>({columns, data,}: DataTableProps<TData,
                                         {selectedRow.description ? selectedRow.description : "Add description..."}
                                     </p>
                                 </Button>
+                            </div>
+                            <div className={"sheet-field-cnt mt-10"}>
+                                <Label className={"pl-1"}>Type</Label>
+                                <IssueTypeSelect currentType={selectedRow.type} issueId={selectedRow.id} silent={true}/>
                             </div>
                         </div>
                     </SheetContent>

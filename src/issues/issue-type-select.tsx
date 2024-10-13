@@ -1,5 +1,5 @@
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "@/components/ui/select"
-import {IIssuePreview, IssueType} from "@/App.tsx";
+import {IssueType} from "@/App.tsx";
 import {useState} from "react";
 import axios from "axios";
 import {ENDPOINTS} from "@/endpoints.ts";
@@ -7,11 +7,13 @@ import {useToast} from "@/hooks/use-toast.ts";
 
 
 interface IssueTypeSelectProps {
-    issuePreview: IIssuePreview
+    currentType: IssueType
+    issueId: number
+    silent: boolean
 }
 
 export default function IssueTypeSelect(props: IssueTypeSelectProps) {
-    const [issueType, setIssueType] = useState<IssueType>(props.issuePreview.type);
+    const [issueType, setIssueType] = useState<IssueType>(props.currentType);
     const { toast } = useToast();
 
     const onIssueTypeChange = (value: string) => {
@@ -22,13 +24,17 @@ export default function IssueTypeSelect(props: IssueTypeSelectProps) {
 
     const updateIssueType = (type: IssueType) => {
         setIssueType(type);
-        props.issuePreview.type = type
-        axios.put(`${ENDPOINTS.ISSUES}/${props.issuePreview.id}/partial`, props.issuePreview)
+        const request = [{
+            "op": "replace",
+            "path": "/type",
+            "value": type
+        }]
+        axios.patch(`${ENDPOINTS.ISSUES}/${props.issueId}`, request)
             .then(res => {
                 if (res.status === 200) {
                     toast({
                         title: "Success",
-                        description: `Type of issue ${props.issuePreview.id} has changed.`
+                        description: `Type of issue ${props.issueId} has changed.`
                     })
                 } else {
                     toast({
