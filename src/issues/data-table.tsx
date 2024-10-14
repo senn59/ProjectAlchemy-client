@@ -13,20 +13,11 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import {
-    Sheet,
-    SheetContent,
-    SheetHeader,
-    SheetTitle,
-} from "@/components/ui/sheet"
-
 import {useState} from "react";
 import {IIssue, IIssuePreview} from "@/App.tsx";
 import axios from "axios";
 import {ENDPOINTS} from "@/endpoints.ts";
-import {Button} from "@/components/ui/button.tsx";
-import {Label} from "@/components/ui/label.tsx";
-import IssueTypeSelect from "@/issues/issue-type-select.tsx";
+import IssueDetails from "@/issues/issue-details.tsx";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -65,35 +56,7 @@ export function DataTable<TData, TValue>({columns, data,}: DataTableProps<TData,
 
     return (
         <div className="rounded-md border">
-            <Sheet open={isOpenSheet} onOpenChange={handleSheetChange}>
-                {selectedRow !== null && (
-                    <SheetContent>
-                        <SheetHeader>
-                            <SheetTitle>Issue {selectedRow.id}</SheetTitle>
-                        </SheetHeader>
-                        <div className={"mt-10"}>
-                            <div className={"sheet-field-cnt"}>
-                                <Label className={"pl-1"}>Name</Label>
-                                <Button variant={"ghost"}
-                                        className={"justify-start text-lg p-2"}>{selectedRow.name}</Button>
-                            </div>
-                            <div className={"sheet-field-cnt mt-10"}>
-                                <Label className={"pl-1"}>Description</Label>
-                                <Button variant={"ghost"}
-                                        className={`justify-start p-2`}>
-                                    <p className={selectedRow.description ? "" : "opacity-50"}>
-                                        {selectedRow.description ? selectedRow.description : "Add description..."}
-                                    </p>
-                                </Button>
-                            </div>
-                            <div className={"sheet-field-cnt mt-10"}>
-                                <Label className={"pl-1"}>Type</Label>
-                                <IssueTypeSelect currentType={selectedRow.type} issueId={selectedRow.id} silent={true}/>
-                            </div>
-                        </div>
-                    </SheetContent>
-                )}
-            </Sheet>
+            <IssueDetails issue={selectedRow} isOpen={isOpenSheet} onOpenChange={handleSheetChange} />
             <Table>
                 <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
