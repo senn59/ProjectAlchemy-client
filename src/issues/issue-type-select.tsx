@@ -31,12 +31,12 @@ export default function IssueTypeSelect(props: IssueTypeSelectProps) {
         }]
         axios.patch(`${ENDPOINTS.ISSUES}/${props.issueId}`, request)
             .then(res => {
-                if (res.status === 200 && props.silent) {
+                if (res.status === 200 && !props.silent) {
                     toast({
                         title: "Success",
                         description: `Type of issue ${props.issueId} has changed.`
                     })
-                } else {
+                } else if (res.status !== 200) {
                     toast({
                         title: "Fail",
                         description: `Request returned err ${res.status}`
