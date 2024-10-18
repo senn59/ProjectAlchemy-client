@@ -5,8 +5,7 @@ import axios from "axios";
 import {ENDPOINTS} from "@/endpoints.ts";
 import {useToast} from "@/hooks/use-toast.ts";
 
-
-interface IssueTypeSelectProps {
+ interface IssueTypeSelectProps {
     currentType: IssueType
     issueId: number
     silent: boolean

@@ -1,8 +1,8 @@
 import {ColumnDef} from "@tanstack/react-table";
-import {IIssuePreview} from "@/App.tsx";
+import {IssuePreview} from "@/App.tsx";
 import IssueTypeSelect from "@/issues/issue-type-select.tsx";
 
-export const columns: ColumnDef<IIssuePreview>[] = [
+export const columns: ColumnDef<IssuePreview>[] = [
     {
         accessorKey: "id",
         header: "Id",
