@@ -6,26 +6,11 @@ import {ThemeProvider} from "@/components/shadcn/theme-provider.tsx";
 import {DataTable} from "@/issues/data-table.tsx";
 import {columns} from "@/issues/columns.tsx";
 import {Toaster} from "@/components/ui/toaster.tsx";
-
-export interface IssuePreview {
-    id: number
-    name: string
-    type: IssueType
-}
-export interface Issue extends IssuePreview{
-    description: string
-}
-
-export enum IssueType {
-    Task = "Task",
-    UserStory = "UserStory",
-    Bug = "Bug",
-}
+import {IssuePreview} from "@/issues/types.ts";
 
 function App() {
     const [issues, setIssues] = useState<IssuePreview[]>([]);
-    useEffect(() => {
-        axios.get<IssuePreview[]>(ENDPOINTS.ISSUES)
+    useEffect(() => { axios.get<IssuePreview[]>(ENDPOINTS.ISSUES)
             .then(res => setIssues(res.data))
     }, [])
     return (

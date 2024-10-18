@@ -1,5 +1,5 @@
 import {ColumnDef} from "@tanstack/react-table";
-import {IssuePreview} from "@/App.tsx";
+import {IssuePreview} from "@/issues/types.ts";
 import IssueTypeSelect from "@/issues/issue-type-select.tsx";
 
 export const columns: ColumnDef<IssuePreview>[] = [
