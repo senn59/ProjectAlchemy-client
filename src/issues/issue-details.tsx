@@ -1,4 +1,4 @@
-import {Issue} from "@/App.tsx";
+import {Issue} from "@/issues/types.ts";
 import {Sheet, SheetContent, SheetHeader, SheetTitle} from "@/components/ui/sheet.tsx";
 import {Label} from "@/components/ui/label.tsx";
 import {Button} from "@/components/ui/button.tsx";

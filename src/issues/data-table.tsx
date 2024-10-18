@@ -14,7 +14,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import {useState} from "react";
-import {Issue, IssuePreview} from "@/App.tsx";
+import {Issue, IssuePreview} from "@/issues/types.ts";
 import axios from "axios";
 import {ENDPOINTS} from "@/endpoints.ts";
 import IssueDetails from "@/issues/issue-details.tsx";
