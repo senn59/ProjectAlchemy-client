@@ -1,4 +1,4 @@
-import {IIssue} from "@/App.tsx";
+import {Issue} from "@/App.tsx";
 import {Sheet, SheetContent, SheetHeader, SheetTitle} from "@/components/ui/sheet.tsx";
 import {Label} from "@/components/ui/label.tsx";
 import {Button} from "@/components/ui/button.tsx";
@@ -9,7 +9,7 @@ import {Textarea} from "@/components/ui/textarea.tsx";
 
 
 interface IssueTypeSelectProps {
-    issue: IIssue | null
+    issue: Issue | null
     isOpen: boolean
     onOpenChange: (isOpen: boolean) => void
 }

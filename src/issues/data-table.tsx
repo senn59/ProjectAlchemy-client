@@ -14,7 +14,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import {useState} from "react";
-import {IIssue, IIssuePreview} from "@/App.tsx";
+import {Issue, IssuePreview} from "@/App.tsx";
 import axios from "axios";
 import {ENDPOINTS} from "@/endpoints.ts";
 import IssueDetails from "@/issues/issue-details.tsx";
@@ -25,7 +25,7 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<TData, TValue>({columns, data,}: DataTableProps<TData, TValue>) {
-    const [selectedRow, setIsSelectedRow] = useState<IIssue | null>(null);
+    const [selectedRow, setIsSelectedRow] = useState<Issue | null>(null);
     const [isOpenSheet, setIsOpenSheet] = useState(false);
 
     const table = useReactTable({
@@ -39,7 +39,7 @@ export function DataTable<TData, TValue>({columns, data,}: DataTableProps<TData,
         row.toggleSelected()
         if (!row.getIsSelected()) {
             setIsOpenSheet(true)
-            const rowData = row.original as IIssuePreview;
+            const rowData = row.original as IssuePreview;
             setIsSelectedRow(await getIssueData(rowData.id))
         }
     }
@@ -50,8 +50,8 @@ export function DataTable<TData, TValue>({columns, data,}: DataTableProps<TData,
         setIsSelectedRow(null)
     }
 
-    const getIssueData = async (id: number): Promise<IIssue> => {
-        return axios.get<IIssue>(`${ENDPOINTS.ISSUES}/${id}`).then(res => res.data)
+    const getIssueData = async (id: number): Promise<Issue> => {
+        return axios.get<Issue>(`${ENDPOINTS.ISSUES}/${id}`).then(res => res.data)
     }
 
     return (

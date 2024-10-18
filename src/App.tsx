@@ -7,12 +7,12 @@ import {DataTable} from "@/issues/data-table.tsx";
 import {columns} from "@/issues/columns.tsx";
 import {Toaster} from "@/components/ui/toaster.tsx";
 
-export interface IIssuePreview {
+export interface IssuePreview {
     id: number
     name: string
     type: IssueType
 }
-export interface IIssue extends IIssuePreview{
+export interface Issue extends IssuePreview{
     description: string
 }
 
@@ -23,14 +23,14 @@ export enum IssueType {
 }
 
 function App() {
-    const [issues, setIssues] = useState<IIssuePreview[]>([]);
+    const [issues, setIssues] = useState<IssuePreview[]>([]);
     useEffect(() => {
-        axios.get<IIssuePreview[]>(ENDPOINTS.ISSUES)
+        axios.get<IssuePreview[]>(ENDPOINTS.ISSUES)
             .then(res => setIssues(res.data))
     }, [])
     return (
         <>
-            <ThemeProvider defaultTheme={"dark"}>
+            <ThemeProvider defaultTheme={"light"}>
                 <Toaster />
                 <DataTable columns={columns} data={issues} />
             </ThemeProvider>
