@@ -1,17 +1,35 @@
-import {create} from "zustand";
-import {IssuePreview} from "@/issues/types.ts";
+import { create } from "zustand";
+import { IssuePreview } from "@/issues/types.ts";
 import axios from "axios";
-import {ENDPOINTS} from "@/endpoints.ts";
+import { ENDPOINTS } from "@/endpoints.ts";
 
 interface IssueTableState {
-    data: IssuePreview[]
+	issues: IssuePreview[];
+	fetchData: () => Promise<void>;
+	updateRowField: <K extends keyof IssuePreview>(
+		id: number,
+		field: K,
+		value: IssuePreview[K],
+	) => void;
 }
 
-const issueTableStore = create<IssueTableState>()((set) => ({
-    data: [],
-    fetchData: async () => {
-        const res = await axios.get<IssuePreview[]>(ENDPOINTS.ISSUES);
-        set({data: res.data})
-    }
-
-}))
+export const useIssueListStore = create<IssueTableState>()((set) => ({
+	issues: [],
+	fetchData: async () => {
+		const res = await axios.get<IssuePreview[]>(ENDPOINTS.ISSUES);
+		set({ issues: res.data });
+	},
+	updateRowField: <K extends keyof IssuePreview>(
+		id: number,
+		field: K,
+		value: IssuePreview[K],
+	) =>
+		set((state) => ({
+			issues: state.issues.map((issue) => {
+				if (issue.id === id) {
+					issue[field] = value;
+				}
+				return issue;
+			}),
+		})),
+}));
