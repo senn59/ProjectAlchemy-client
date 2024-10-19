@@ -1,5 +1,5 @@
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "@/components/ui/select"
-import {IssueType} from "@/App.tsx";
+import {IssueType} from "@/issues/types.ts";
 import {useState} from "react";
 import axios from "axios";
 import {ENDPOINTS} from "@/endpoints.ts";
