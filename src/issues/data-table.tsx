@@ -14,11 +14,13 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { useState } from "react";
+import { KeyboardEvent, useState } from "react";
 import { Issue, IssuePreview } from "@/issues/types.ts";
 import axios from "axios";
 import { ENDPOINTS } from "@/endpoints.ts";
 import IssueDetails from "@/issues/issue-details.tsx";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -31,6 +33,28 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
 	const [selectedRow, setIsSelectedRow] = useState<Issue | null>(null);
 	const [isOpenSheet, setIsOpenSheet] = useState(false);
+
+	const [newItemName, setNewItemName] = useState("");
+	const [isAddingNew, setIsAddingNew] = useState(false);
+
+	const handleAddNew = () => {
+		setIsAddingNew(true);
+		setNewItemName("");
+	};
+
+	const handleSaveNew = (e: React.FormEvent) => {
+		e.preventDefault();
+		if (newItemName.trim()) {
+			setIsAddingNew(false);
+		}
+		//TODO: save logic
+	};
+
+	const handleKeyPressNew = (event: KeyboardEvent) => {
+		if (event.key === "Escape" && !event.shiftKey) {
+			setIsAddingNew(false);
+		}
+	};
 
 	const table = useReactTable({
 		data,
@@ -62,9 +86,7 @@ export function DataTable<TData, TValue>({
 
 	return (
 		<div className="rounded-md border">
-			{selectedRow == null ? (
-				""
-			) : (
+			{selectedRow != null && (
 				<IssueDetails
 					issue={selectedRow}
 					isOpen={isOpenSheet}
@@ -122,8 +144,41 @@ export function DataTable<TData, TValue>({
 							</TableCell>
 						</TableRow>
 					)}
+					{isAddingNew && (
+						<TableRow>
+							<TableCell colSpan={columns.length}>
+								<form
+									onSubmit={handleSaveNew}
+									className="flex w-full"
+								>
+									<Input
+										type="text"
+										placeholder="Enter new item name"
+										value={newItemName}
+										onChange={(e) =>
+											setNewItemName(e.target.value)
+										}
+										onBlur={() => setIsAddingNew(false)}
+										onKeyDown={handleKeyPressNew}
+										className="flex-grow"
+										autoFocus
+									/>
+								</form>
+							</TableCell>
+						</TableRow>
+					)}
 				</TableBody>
 			</Table>
+			<div className="w-full">
+				<Button
+					variant={"ghost"}
+					onClick={handleAddNew}
+					disabled={isAddingNew}
+					className="w-full rounded-none"
+				>
+					+ Add issue
+				</Button>
+			</div>
 		</div>
 	);
 }
