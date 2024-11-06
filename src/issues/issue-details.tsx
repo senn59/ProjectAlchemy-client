@@ -151,7 +151,6 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                         <div className={"sheet-field-cnt mt-10"}>
                             <Label className={"pl-1"}>Type</Label>
                             <IssueTypeSelect
-                                currentType={props.issue.type}
                                 issueId={props.issue.id}
                                 silent={true}
                             />
