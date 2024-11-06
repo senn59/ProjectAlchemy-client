@@ -136,7 +136,7 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                                 >
                                     <p
                                         className={
-                                            props.issue.description
+                                            editableFields.description
                                                 ? ""
                                                 : "opacity-50"
                                         }
