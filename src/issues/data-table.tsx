@@ -14,13 +14,15 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { KeyboardEvent, useState } from "react";
-import { Issue, IssuePreview } from "@/issues/types.ts";
+
+import { FormEvent, KeyboardEvent, useState } from "react";
+import { Issue, IssuePreview, IssueType } from "@/issues/types.ts";
 import axios from "axios";
 import { ENDPOINTS } from "@/endpoints.ts";
 import IssueDetails from "@/issues/issue-details.tsx";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useIssueListStore } from "./store";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -31,6 +33,8 @@ export function DataTable<TData, TValue>({
     columns,
     data,
 }: DataTableProps<TData, TValue>) {
+    const addIssueToTable = useIssueListStore((s) => s.addIssue);
+    const updateName = useIssueListStore((s) => s.updateRowField);
     const [selectedRow, setIsSelectedRow] = useState<Issue | null>(null);
     const [isOpenSheet, setIsOpenSheet] = useState(false);
 
@@ -42,12 +46,18 @@ export function DataTable<TData, TValue>({
         setNewItemName("");
     };
 
-    const handleSaveNew = (e: React.FormEvent) => {
+    const handleSaveNew = (e: FormEvent) => {
         e.preventDefault();
         if (newItemName.trim()) {
             setIsAddingNew(false);
         }
-        //TODO: save logic
+
+        axios
+            .post<IssuePreview>(ENDPOINTS.ISSUES, {
+                name: newItemName,
+                type: IssueType.Task,
+            })
+            .then((res) => addIssueToTable(res.data));
     };
 
     const handleKeyPressNew = (event: KeyboardEvent) => {

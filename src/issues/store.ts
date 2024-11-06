@@ -11,6 +11,7 @@ interface IssueTableState {
         field: K,
         value: IssuePreview[K],
     ) => void;
+    addIssue: (issue: IssuePreview) => void;
 }
 
 export const useIssueListStore = create<IssueTableState>()((set) => ({
@@ -32,4 +33,6 @@ export const useIssueListStore = create<IssueTableState>()((set) => ({
                 return issue;
             }),
         })),
+    addIssue: (issue: IssuePreview) =>
+        set((state) => ({ issues: [...state.issues, issue] })),
 }));
