@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer components {
-  .sheet-field-cnt {
-    @apply flex flex-col space-y-3 justify-start
-  }
+    .sheet-field-cnt {
+        @apply flex flex-col space-y-3 justify-start;
+    }
 }
