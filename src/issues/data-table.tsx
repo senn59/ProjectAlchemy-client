@@ -34,8 +34,7 @@ export function DataTable<TData, TValue>({
     data,
 }: DataTableProps<TData, TValue>) {
     const addIssueToTable = useIssueListStore((s) => s.addIssue);
-    const updateName = useIssueListStore((s) => s.updateRowField);
-    const [selectedRow, setIsSelectedRow] = useState<Issue | null>(null);
+    const [selectedRow, setSelectedRow] = useState<Issue | null>(null);
     const [isOpenSheet, setIsOpenSheet] = useState(false);
 
     const [newItemName, setNewItemName] = useState("");
@@ -57,7 +56,10 @@ export function DataTable<TData, TValue>({
                 name: newItemName,
                 type: IssueType.Task,
             })
-            .then((res) => addIssueToTable(res.data));
+            .then((res) => {
+                const newIssue = res.data as IssuePreview;
+                addIssueToTable(newIssue);
+            });
     };
 
     const handleKeyPressNew = (event: KeyboardEvent) => {
@@ -78,14 +80,14 @@ export function DataTable<TData, TValue>({
         if (!row.getIsSelected()) {
             setIsOpenSheet(true);
             const rowData = row.original as IssuePreview;
-            setIsSelectedRow(await getIssueData(rowData.id));
+            setSelectedRow(await getIssueData(rowData.id));
         }
     };
 
     const handleSheetChange = () => {
         table.toggleAllPageRowsSelected(false);
         setIsOpenSheet(false);
-        setIsSelectedRow(null);
+        setSelectedRow(null);
     };
 
     const getIssueData = async (id: number): Promise<Issue> => {
