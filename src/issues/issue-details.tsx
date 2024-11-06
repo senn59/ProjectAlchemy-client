@@ -1,4 +1,4 @@
-import { Issue } from "@/issues/types.ts";
+import { Issue, IssuePreview } from "@/issues/types.ts";
 import {
     Sheet,
     SheetContent,
@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input.tsx";
 import { Textarea } from "@/components/ui/textarea.tsx";
 import { ENDPOINTS } from "@/endpoints";
 import axios from "axios";
+import { useIssueListStore } from "./store";
 
 interface IssueTypeSelectProps {
     issue: Issue;
@@ -27,6 +28,7 @@ interface EditableFields {
 
 export default function IssueDetails(props: IssueTypeSelectProps) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const updateTableRow = useIssueListStore((s) => s.updateRowField);
     const [editableFields, setEditableFields] = useState<EditableFields>({
         name: props.issue.name,
         description: props.issue.description,
@@ -57,8 +59,16 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                 value: editableFields[issueField],
             },
         ];
-        console.log(request);
-        axios.patch(`${ENDPOINTS.ISSUES}/${props.issue.id}`, request);
+        axios
+            .patch(`${ENDPOINTS.ISSUES}/${props.issue.id}`, request)
+            .then((res) => {
+                const updatesIssue = res.data as Issue;
+                updateTableRow(
+                    props.issue.id,
+                    issueField as keyof IssuePreview,
+                    updatesIssue[issueField],
+                );
+            });
     };
 
     const handleKeyPress = (event: KeyboardEvent, field: string) => {
