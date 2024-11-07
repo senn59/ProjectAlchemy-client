@@ -1,4 +1,4 @@
-import { Issue, IssuePreview } from "@/issues/types.ts";
+import { Issue, PartialIssue } from "@/issues/types.ts";
 import {
     Sheet,
     SheetContent,
@@ -65,7 +65,7 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                 const updatesIssue = res.data as Issue;
                 updateTableRow(
                     props.issue.id,
-                    issueField as keyof IssuePreview,
+                    issueField as keyof PartialIssue,
                     updatesIssue[issueField],
                 );
             });
