@@ -1,10 +1,10 @@
-export interface IssuePreview {
+export interface PartialIssue {
     id: number;
     name: string;
     type: IssueType;
 }
 
-export interface Issue extends IssuePreview {
+export interface Issue extends PartialIssue {
     description: string;
 }
 

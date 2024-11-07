@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/table";
 
 import { FormEvent, KeyboardEvent, useState } from "react";
-import { Issue, IssuePreview, IssueType } from "@/issues/types.ts";
+import { Issue, PartialIssue, IssueType } from "@/issues/types.ts";
 import axios from "axios";
 import { ENDPOINTS } from "@/endpoints.ts";
 import IssueDetails from "@/issues/issue-details.tsx";
@@ -52,12 +52,12 @@ export function DataTable<TData, TValue>({
         }
 
         axios
-            .post<IssuePreview>(ENDPOINTS.ISSUES, {
+            .post<PartialIssue>(ENDPOINTS.ISSUES, {
                 name: newItemName,
                 type: IssueType.Task,
             })
             .then((res) => {
-                const newIssue = res.data as IssuePreview;
+                const newIssue = res.data as PartialIssue;
                 addIssueToTable(newIssue);
             });
     };
@@ -79,7 +79,7 @@ export function DataTable<TData, TValue>({
         row.toggleSelected();
         if (!row.getIsSelected()) {
             setIsOpenSheet(true);
-            const rowData = row.original as IssuePreview;
+            const rowData = row.original as PartialIssue;
             setSelectedRow(await getIssueData(rowData.id));
         }
     };

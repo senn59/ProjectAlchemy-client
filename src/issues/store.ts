@@ -1,29 +1,29 @@
 import { create } from "zustand";
-import { IssuePreview } from "@/issues/types.ts";
+import { PartialIssue } from "@/issues/types.ts";
 import axios from "axios";
 import { ENDPOINTS } from "@/endpoints.ts";
 
 interface IssueTableState {
-    issues: IssuePreview[];
+    issues: PartialIssue[];
     fetchData: () => Promise<void>;
-    updateRowField: <K extends keyof IssuePreview>(
+    updateRowField: <K extends keyof PartialIssue>(
         id: number,
         field: K,
-        value: IssuePreview[K],
+        value: PartialIssue[K],
     ) => void;
-    addIssue: (issue: IssuePreview) => void;
+    addIssue: (issue: PartialIssue) => void;
 }
 
 export const useIssueListStore = create<IssueTableState>()((set) => ({
     issues: [],
     fetchData: async () => {
-        const res = await axios.get<IssuePreview[]>(ENDPOINTS.ISSUES);
+        const res = await axios.get<PartialIssue[]>(ENDPOINTS.ISSUES);
         set({ issues: res.data });
     },
-    updateRowField: <K extends keyof IssuePreview>(
+    updateRowField: <K extends keyof PartialIssue>(
         id: number,
         field: K,
-        value: IssuePreview[K],
+        value: PartialIssue[K],
     ) =>
         set((state) => ({
             issues: state.issues.map((issue) => {
@@ -33,6 +33,6 @@ export const useIssueListStore = create<IssueTableState>()((set) => ({
                 return issue;
             }),
         })),
-    addIssue: (issue: IssuePreview) =>
+    addIssue: (issue: PartialIssue) =>
         set((state) => ({ issues: [...state.issues, issue] })),
 }));
