@@ -1,30 +1,31 @@
-import './App.css'
-import {useEffect, useState} from "react";
-import axios from "axios";
-import {IssueList} from "@/components/issues/IssueList.tsx";
-import {ENDPOINTS} from "@/endpoints.ts";
-import {ThemeProvider} from "@/components/shadcn/theme-provider.tsx";
-
-export interface IIssue {
-    name: string
-    description?: string
-}
+import "./App.css";
+import { useEffect } from "react";
+import { ThemeProvider } from "@/components/shadcn/theme-provider.tsx";
+import { DataTable } from "@/issues/data-table.tsx";
+import { columns } from "@/issues/columns.tsx";
+import { Toaster } from "@/components/ui/toaster.tsx";
+import { useIssueListStore } from "@/issues/store.ts";
 
 function App() {
-    const [issues, setIssues] = useState<IIssue[]>([]);
+    const fetch = useIssueListStore((s) => s.fetchData);
+    const issues = useIssueListStore((s) => s.issues);
+
     useEffect(() => {
-        axios.get<IIssue[]>(ENDPOINTS.ISSUES)
-            .then(res => setIssues(res.data))
-    })
+        fetch();
+    }, []);
+
     return (
         <>
             <ThemeProvider defaultTheme={"dark"}>
-                <div className={"issues-container"}>
-                    <IssueList issues={issues}/>
-                </div>
+                <Toaster />
+                <DataTable
+                    // key={JSON.stringify(issues)}
+                    columns={columns}
+                    data={issues}
+                />
             </ThemeProvider>
         </>
-    )
+    );
 }
 
-export default App
+export default App;
