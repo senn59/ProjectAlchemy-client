@@ -13,8 +13,11 @@ function Root() {
                         <Link to="/board">Board</Link>
                     </Button>
                 </div>
-                <div className="pr-5">
+                <div className="pr-5 flex items-center justify-between w-40">
                     <ModeToggle />
+                    <Button variant={"outline"}>
+                        <Link to="/login">Log In</Link>
+                    </Button>
                 </div>
             </div>
             <Separator />
