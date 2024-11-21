@@ -14,16 +14,14 @@ function Board() {
     }, []);
 
     return (
-        <>
+        <div className="flex-grow flex items-center justify-center">
             <Toaster />
-            <div className="flex justify-center items-center h-screen">
-                <DataTable
-                    // key={JSON.stringify(issues)}
-                    columns={columns}
-                    data={issues}
-                />
-            </div>
-        </>
+            <DataTable
+                // key={JSON.stringify(issues)}
+                columns={columns}
+                data={issues}
+            />
+        </div>
     );
 }
 
