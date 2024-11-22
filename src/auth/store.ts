@@ -1,6 +1,14 @@
 import { create } from "zustand";
 
-const useAuthStore = create((set) => ({
+interface AuthState {
+    user: string | null;
+    jwt: string | null;
+    setUser: (user: string | null) => void;
+    setJwt: (jwt: string | null) => void;
+    logout: () => void;
+}
+
+export const useAuthStore = create<AuthState>((set) => ({
     user: null,
     jwt: null,
 

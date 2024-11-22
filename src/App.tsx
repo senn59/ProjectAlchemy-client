@@ -3,8 +3,9 @@ import "./App.css";
 import { ThemeProvider } from "@/components/shadcn/theme-provider.tsx";
 import Board from "@/routes/board";
 import Layout from "@/routes/layout";
-import Login from "@/routes/login";
+import Signin from "@/routes/signin";
 import Index from "./routes";
+import Protected from "@/routes/protected.tsx";
 
 function App() {
     return (
@@ -14,10 +15,12 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Index />} />
                         <Route path="auth">
-                            <Route path="login" element={<Login />} />
+                            <Route path="signin" element={<Signin />} />
                         </Route>
-                        <Route element={<Layout />}>
-                            <Route path="board" element={<Board />} />
+                        <Route element={<Protected />}>
+                            <Route element={<Layout />}>
+                                <Route path="board" element={<Board />} />
+                            </Route>
                         </Route>
                     </Routes>
                 </BrowserRouter>
