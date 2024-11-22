@@ -1,31 +1,26 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import { ThemeProvider } from "@/components/shadcn/theme-provider.tsx";
 import Board from "@/routes/board";
 import Layout from "@/routes/layout";
 import Login from "@/routes/login";
+import Index from "./routes";
 
 function App() {
-    const router = createBrowserRouter([
-        {
-            path: "/",
-            element: <Layout />,
-            children: [
-                {
-                    path: "/board",
-                    element: <Board />,
-                },
-                {
-                    path: "/login",
-                    element: <Login />,
-                },
-            ],
-        },
-    ]);
     return (
         <>
             <ThemeProvider defaultTheme={"dark"}>
-                <RouterProvider router={router} />
+                <BrowserRouter>
+                    <Routes>
+                        <Route path="/" element={<Index />} />
+                        <Route path="auth">
+                            <Route path="login" element={<Login />} />
+                        </Route>
+                        <Route element={<Layout />}>
+                            <Route path="board" element={<Board />} />
+                        </Route>
+                    </Routes>
+                </BrowserRouter>
             </ThemeProvider>
         </>
     );
