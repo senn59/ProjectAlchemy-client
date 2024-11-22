@@ -6,6 +6,7 @@ import Layout from "@/routes/layout";
 import Signin from "@/routes/signin";
 import Index from "./routes";
 import Protected from "@/routes/protected.tsx";
+import Signup from "@/routes/signup.tsx";
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                         <Route path="/" element={<Index />} />
                         <Route path="auth">
                             <Route path="signin" element={<Signin />} />
+                            <Route path="signup" element={<Signup />} />
                         </Route>
                         <Route element={<Protected />}>
                             <Route element={<Layout />}>

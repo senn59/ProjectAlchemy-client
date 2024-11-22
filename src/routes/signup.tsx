@@ -10,13 +10,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 
-export default function Signin() {
+export default function Signup() {
     return (
         <div className="h-screen flex justify-center items-center">
             <Card className="w-96">
                 <CardHeader>
-                    <CardTitle>Sign in</CardTitle>
-                    <CardDescription>Sign in to your account</CardDescription>
+                    <CardTitle>Sign up</CardTitle>
+                    <CardDescription>Sign up for an account</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="pb-4">
@@ -25,16 +25,19 @@ export default function Signin() {
                     <div className="pb-4">
                         <Input type="password" placeholder="Password" />
                     </div>
+                    <div className="pb-4">
+                        <Input type="password" placeholder="Repeat Password" />
+                    </div>
                     <Button className="w-full">Continue</Button>
                 </CardContent>
                 <CardFooter>
                     <div className="text-sm text-muted-foreground">
-                        Don't have an account?{" "}
+                        Already have an account?{" "}
                         <Link
-                            to={"/auth/signup"}
+                            to={"/auth/signin"}
                             className="font-bold hover:underline"
                         >
-                            Signup
+                            Sign in
                         </Link>
                     </div>
                 </CardFooter>
