@@ -52,7 +52,7 @@ export function DataTable<TData, TValue>({
             setIsAddingNew(false);
         }
 
-        api.post<PartialIssue>(ENDPOINTS.ISSUE, {
+        api.post<PartialIssue>(ENDPOINTS.ISSUES, {
             name: newItemName,
             type: IssueType.Task,
         })
@@ -99,7 +99,7 @@ export function DataTable<TData, TValue>({
 
     const getIssueData = async (id: number): Promise<Issue | void> => {
         return api
-            .get<Issue>(ENDPOINTS.ISSUE_WITH_ID(id))
+            .get<Issue>(ENDPOINTS.ISSUES_WITH_ID(id))
             .then((res) => res.data)
             .catch((error) => {
                 toast({

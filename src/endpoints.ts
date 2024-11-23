@@ -1,4 +1,4 @@
 export const ENDPOINTS = {
-    ISSUE: "/issue",
-    ISSUE_WITH_ID: (id: number) => `${ENDPOINTS.ISSUE}/${id}`,
+    ISSUES: "/issues",
+    ISSUES_WITH_ID: (id: number) => `${ENDPOINTS.ISSUES}/${id}`,
 };

@@ -60,7 +60,7 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                 value: editableFields[issueField],
             },
         ];
-        api.patch(ENDPOINTS.ISSUE_WITH_ID(props.issue.id), request)
+        api.patch(ENDPOINTS.ISSUES_WITH_ID(props.issue.id), request)
             .then((res) => {
                 const updatesIssue = res.data as Issue;
                 updateTableRow(

@@ -39,7 +39,7 @@ export default function IssueTypeSelect(props: IssueTypeSelectProps) {
                 value: type,
             },
         ];
-        api.patch(ENDPOINTS.ISSUE_WITH_ID(props.issueId), request)
+        api.patch(ENDPOINTS.ISSUES_WITH_ID(props.issueId), request)
             .then(() => {
                 toast({
                     title: "Success",

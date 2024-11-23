@@ -19,7 +19,7 @@ export const useIssueListStore = create<IssueTableState>()((set) => ({
     issues: [],
     fetchData: async () => {
         try {
-            const res = await api.get<PartialIssue[]>(ENDPOINTS.ISSUE);
+            const res = await api.get<PartialIssue[]>(ENDPOINTS.ISSUES);
             set({ issues: res.data });
         } catch (error) {
             toast({
