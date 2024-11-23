@@ -7,11 +7,13 @@ import Signin from "@/routes/signin";
 import Index from "./routes";
 import Protected from "@/routes/protected.tsx";
 import Signup from "@/routes/signup.tsx";
+import { Toaster } from "@/components/ui/toaster.tsx";
 
 function App() {
     return (
         <>
             <ThemeProvider defaultTheme={"dark"}>
+                <Toaster />
                 <BrowserRouter>
                     <Routes>
                         <Route path="/" element={<Index />} />
