@@ -10,7 +10,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { supabase } from "@/auth/supabaseClient.ts";
-import React, { FormEvent, useState } from "react";
 import { toast } from "@/hooks/use-toast.ts";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -22,13 +21,17 @@ import {
     FormItem,
     FormMessage,
 } from "@/components/ui/form.tsx";
+import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
+    const navigate = useNavigate();
     const formSchema = z
         .object({
             email: z.string().email(),
-            password: z.string().min(6, "Enter a valid password"),
-            passwordConfirm: z.string().min(6, "Enter a valid password"),
+            password: z
+                .string()
+                .min(6, "Password must have a minimum length of 6"),
+            passwordConfirm: z.string(),
         })
         .refine((data) => data.password == data.passwordConfirm, {
             message: "Passwords dont match",
@@ -43,7 +46,22 @@ export default function Signup() {
         },
     });
     const onSubmit = (values: z.infer<typeof formSchema>) => {
-        console.log(values);
+        supabase.auth
+            .signUp({
+                email: values.email,
+                password: values.password,
+            })
+            .then(() => {
+                navigate("/auth/signin");
+            })
+            .catch(() => {
+                toast({
+                    variant: "destructive",
+                    title: "Error!",
+                    description:
+                        "Something went wrong while trying to process your request!",
+                });
+            });
     };
 
     return (
