@@ -6,10 +6,10 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { IssueType } from "@/issues/types.ts";
-import axios from "axios";
 import { ENDPOINTS } from "@/endpoints.ts";
 import { useToast } from "@/hooks/use-toast.ts";
 import { useIssueListStore } from "./store";
+import api from "@/api.ts";
 
 interface IssueTypeSelectProps {
     issueId: number;
@@ -39,20 +39,19 @@ export default function IssueTypeSelect(props: IssueTypeSelectProps) {
                 value: type,
             },
         ];
-        axios
-            .patch(`${ENDPOINTS.ISSUES}/${props.issueId}`, request)
-            .then((res) => {
-                if (res.status === 200 && !props.silent) {
-                    toast({
-                        title: "Success",
-                        description: `Type of issue ${props.issueId} has changed.`,
-                    });
-                } else if (res.status !== 200) {
-                    toast({
-                        title: "Fail",
-                        description: `Request returned err ${res.status}`,
-                    });
-                }
+        api.patch(ENDPOINTS.ISSUE_WITH_ID(props.issueId), request)
+            .then(() => {
+                toast({
+                    title: "Success",
+                    description: `Type of issue ${props.issueId} has changed.`,
+                });
+            })
+            .catch((error) => {
+                toast({
+                    variant: "destructive",
+                    title: "Error updating issue!",
+                    description: error.message,
+                });
             });
     };
 
