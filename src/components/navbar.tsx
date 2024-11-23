@@ -2,16 +2,17 @@ import { Link, useNavigate } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/shadcn/theme-toggle";
-import { useAuthStore } from "@/auth/store.ts";
+import { useAuth } from "@/auth/authprovider.tsx";
 
 function Navbar() {
-    const store = useAuthStore();
+    const { logout } = useAuth();
     const navigate = useNavigate();
 
     const signOut = () => {
-        store.logout();
+        logout();
         navigate("/");
     };
+
     return (
         <>
             <div className="w-screen h-16 flex items-center justify-between">

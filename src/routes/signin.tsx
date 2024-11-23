@@ -21,10 +21,10 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "@/auth/supabaseClient.ts";
 import { toast } from "@/hooks/use-toast.ts";
-import { useAuthStore } from "@/auth/store.ts";
+import { useAuth } from "@/auth/authprovider.tsx";
 
 export default function Signin() {
-    const store = useAuthStore();
+    const { setUser, setJwt } = useAuth();
     const navigate = useNavigate();
 
     const formSchema = z.object({
@@ -54,8 +54,8 @@ export default function Signin() {
                         description: res.error.message,
                     });
                 } else {
-                    store.setUser(res.data.user);
-                    store.setJwt(res.data.session.access_token);
+                    setUser(res.data.user);
+                    setJwt(res.data.session.access_token);
                     navigate("/board");
                 }
             })

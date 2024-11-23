@@ -1,10 +1,10 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuthStore } from "@/auth/store";
+import { useAuth } from "@/auth/authprovider.tsx";
 
 const Protected = () => {
-    const store = useAuthStore();
+    const { jwt } = useAuth();
 
-    return store.jwt ? <Outlet /> : <Navigate to="/auth/signin" />;
+    return jwt ? <Outlet /> : <Navigate to="/auth/signin" />;
 };
 
 export default Protected;
