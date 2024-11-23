@@ -7,7 +7,6 @@ const api = axios.create({
 api.defaults.headers.common["Content-Type"] = "application/json";
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem("auth-jwt");
-    console.log(token);
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
