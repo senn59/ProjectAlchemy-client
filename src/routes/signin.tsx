@@ -8,7 +8,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import {
     Form,
@@ -21,8 +21,12 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "@/auth/supabaseClient.ts";
 import { toast } from "@/hooks/use-toast.ts";
+import { useAuthStore } from "@/auth/store.ts";
 
 export default function Signin() {
+    const store = useAuthStore();
+    const navigate = useNavigate();
+
     const formSchema = z.object({
         email: z.string().email("Enter a valid email"),
         password: z.string().min(6, "Enter a valid password"),
@@ -42,16 +46,17 @@ export default function Signin() {
                 email: values.email,
                 password: values.password,
             })
-            .then((data) => {
-                console.log(data);
-                if (data.error) {
+            .then((res) => {
+                if (res.error) {
                     toast({
                         variant: "destructive",
                         title: "Error occurred while trying to log you in!",
-                        description: data.error.message,
+                        description: res.error.message,
                     });
                 } else {
-                    console.log("Logged in!");
+                    store.setUser(res.data.user);
+                    store.setJwt(res.data.session.access_token);
+                    navigate("/board");
                 }
             })
             .catch(() => {

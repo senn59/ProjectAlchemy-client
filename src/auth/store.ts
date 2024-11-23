@@ -1,9 +1,10 @@
 import { create } from "zustand";
+import { User } from "@supabase/supabase-js";
 
 interface AuthState {
-    user: string | null;
+    user: User | null;
     jwt: string | null;
-    setUser: (user: string | null) => void;
+    setUser: (user: User | null) => void;
     setJwt: (jwt: string | null) => void;
     logout: () => void;
 }
