@@ -1,28 +1,33 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
-import { useEffect } from "react";
 import { ThemeProvider } from "@/components/shadcn/theme-provider.tsx";
-import { DataTable } from "@/issues/data-table.tsx";
-import { columns } from "@/issues/columns.tsx";
+import Board from "@/routes/board";
+import Layout from "@/routes/layout";
+import Signin from "@/routes/signin";
+import Index from "./routes";
+import Protected from "@/routes/protected.tsx";
+import Signup from "@/routes/signup.tsx";
 import { Toaster } from "@/components/ui/toaster.tsx";
-import { useIssueListStore } from "@/issues/store.ts";
 
 function App() {
-    const fetch = useIssueListStore((s) => s.fetchData);
-    const issues = useIssueListStore((s) => s.issues);
-
-    useEffect(() => {
-        fetch();
-    }, []);
-
     return (
         <>
             <ThemeProvider defaultTheme={"dark"}>
                 <Toaster />
-                <DataTable
-                    // key={JSON.stringify(issues)}
-                    columns={columns}
-                    data={issues}
-                />
+                <BrowserRouter>
+                    <Routes>
+                        <Route path="/" element={<Index />} />
+                        <Route path="auth">
+                            <Route path="signin" element={<Signin />} />
+                            <Route path="signup" element={<Signup />} />
+                        </Route>
+                        <Route element={<Protected />}>
+                            <Route element={<Layout />}>
+                                <Route path="board" element={<Board />} />
+                            </Route>
+                        </Route>
+                    </Routes>
+                </BrowserRouter>
             </ThemeProvider>
         </>
     );

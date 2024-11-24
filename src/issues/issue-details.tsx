@@ -12,8 +12,9 @@ import { KeyboardEvent, useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input.tsx";
 import { Textarea } from "@/components/ui/textarea.tsx";
 import { ENDPOINTS } from "@/endpoints";
-import axios from "axios";
 import { useIssueListStore } from "./store";
+import api from "@/api.ts";
+import { toast } from "@/hooks/use-toast.ts";
 
 interface IssueTypeSelectProps {
     issue: Issue;
@@ -59,8 +60,7 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                 value: editableFields[issueField],
             },
         ];
-        axios
-            .patch(`${ENDPOINTS.ISSUES}/${props.issue.id}`, request)
+        api.patch(ENDPOINTS.ISSUES_WITH_ID(props.issue.id), request)
             .then((res) => {
                 const updatesIssue = res.data as Issue;
                 updateTableRow(
@@ -68,6 +68,13 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                     issueField as keyof PartialIssue,
                     updatesIssue[issueField],
                 );
+            })
+            .catch((error) => {
+                toast({
+                    variant: "destructive",
+                    title: "Error updating issue!",
+                    description: error.message,
+                });
             });
     };
 

@@ -17,12 +17,13 @@ import {
 
 import { FormEvent, KeyboardEvent, useState } from "react";
 import { Issue, PartialIssue, IssueType } from "@/issues/types.ts";
-import axios from "axios";
 import { ENDPOINTS } from "@/endpoints.ts";
 import IssueDetails from "@/issues/issue-details.tsx";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useIssueListStore } from "./store";
+import api from "@/api.ts";
+import { toast } from "@/hooks/use-toast.ts";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -51,14 +52,20 @@ export function DataTable<TData, TValue>({
             setIsAddingNew(false);
         }
 
-        axios
-            .post<PartialIssue>(ENDPOINTS.ISSUES, {
-                name: newItemName,
-                type: IssueType.Task,
-            })
+        api.post<PartialIssue>(ENDPOINTS.ISSUES, {
+            name: newItemName,
+            type: IssueType.Task,
+        })
             .then((res) => {
                 const newIssue = res.data as PartialIssue;
                 addIssueToTable(newIssue);
+            })
+            .catch((error) => {
+                toast({
+                    variant: "destructive",
+                    title: "Error creating issue!",
+                    description: error.message,
+                });
             });
     };
 
@@ -80,7 +87,7 @@ export function DataTable<TData, TValue>({
         if (!row.getIsSelected()) {
             setIsOpenSheet(true);
             const rowData = row.original as PartialIssue;
-            setSelectedRow(await getIssueData(rowData.id));
+            setSelectedRow((await getIssueData(rowData.id)) ?? null);
         }
     };
 
@@ -90,10 +97,17 @@ export function DataTable<TData, TValue>({
         setSelectedRow(null);
     };
 
-    const getIssueData = async (id: number): Promise<Issue> => {
-        return axios
-            .get<Issue>(`${ENDPOINTS.ISSUES}/${id}`)
-            .then((res) => res.data);
+    const getIssueData = async (id: number): Promise<Issue | void> => {
+        return api
+            .get<Issue>(ENDPOINTS.ISSUES_WITH_ID(id))
+            .then((res) => res.data)
+            .catch((error) => {
+                toast({
+                    variant: "destructive",
+                    title: "Error retrieving issue!",
+                    description: error.message,
+                });
+            });
     };
 
     return (

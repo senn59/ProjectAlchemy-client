@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { PartialIssue } from "@/issues/types.ts";
-import axios from "axios";
+import { toast } from "@/hooks/use-toast.ts";
+import api from "@/api";
 import { ENDPOINTS } from "@/endpoints.ts";
 
 interface IssueTableState {
@@ -17,8 +18,16 @@ interface IssueTableState {
 export const useIssueListStore = create<IssueTableState>()((set) => ({
     issues: [],
     fetchData: async () => {
-        const res = await axios.get<PartialIssue[]>(ENDPOINTS.ISSUES);
-        set({ issues: res.data });
+        try {
+            const res = await api.get<PartialIssue[]>(ENDPOINTS.ISSUES);
+            set({ issues: res.data });
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Error retrieving issues!",
+                description: (error as Error).message,
+            });
+        }
     },
     updateRowField: <K extends keyof PartialIssue>(
         id: number,
