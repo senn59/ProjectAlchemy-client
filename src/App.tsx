@@ -25,8 +25,6 @@ function App() {
                         <Route element={<Protected />}>
                             <Route element={<Layout />}>
                                 <Route path="board" element={<Board />} />
-                            </Route>
-                            <Route element={<Layout />}>
                                 <Route path="projects" element={<Projects />} />
                             </Route>
                         </Route>
