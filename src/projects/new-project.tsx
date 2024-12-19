@@ -22,6 +22,8 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form.tsx";
+import api from "@/api.ts";
+import { toast } from "@/hooks/use-toast.ts";
 
 function NewProject() {
     const formSchema = z.object({
@@ -38,7 +40,17 @@ function NewProject() {
         },
     });
     const onSubmit = (values: z.infer<typeof formSchema>) => {
-        console.log(values);
+        api.post("/projects", { name: values.name })
+            .then((res) => {
+                console.log(res);
+            })
+            .catch((err) => {
+                toast({
+                    variant: "destructive",
+                    title: "Error while creating project",
+                    description: err?.message,
+                });
+            });
     };
 
     return (
