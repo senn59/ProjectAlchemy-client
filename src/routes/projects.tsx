@@ -10,12 +10,21 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import NewProject from "@/projects/new-project.tsx";
+import { toast } from "@/hooks/use-toast.ts";
 
 function Projects() {
     const [projects, setProjects] = useState<ProjectOverview[]>([]);
 
     useEffect(() => {
-        api.get("/projects").then((r) => setProjects(r.data));
+        api.get("/projects")
+            .then((res) => setProjects(res.data))
+            .catch((res) => {
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: res.message,
+                });
+            });
     }, []);
 
     return (
@@ -36,7 +45,7 @@ function Projects() {
                     </TableHeader>
                     <TableBody>
                         {projects.map((p) => (
-                            <TableRow>
+                            <TableRow key={p.projectId}>
                                 <TableCell className="font-medium">
                                     {p.projectName}
                                 </TableCell>
