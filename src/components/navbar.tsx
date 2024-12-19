@@ -19,6 +19,9 @@ function Navbar() {
                 <div className="w-full flex items-center">
                     <h1 className="pr-4 pl-4 font-bold">ProjectAlchemy</h1>
                     <Button variant={"ghost"}>
+                        <Link to="/projects">Projects</Link>
+                    </Button>
+                    <Button variant={"ghost"}>
                         <Link to="/board">Board</Link>
                     </Button>
                 </div>

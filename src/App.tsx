@@ -8,6 +8,7 @@ import Index from "./routes";
 import Protected from "@/routes/protected.tsx";
 import Signup from "@/routes/signup.tsx";
 import { Toaster } from "@/components/ui/toaster.tsx";
+import Projects from "@/routes/projects.tsx";
 
 function App() {
     return (
@@ -24,6 +25,9 @@ function App() {
                         <Route element={<Protected />}>
                             <Route element={<Layout />}>
                                 <Route path="board" element={<Board />} />
+                            </Route>
+                            <Route element={<Layout />}>
+                                <Route path="projects" element={<Projects />} />
                             </Route>
                         </Route>
                     </Routes>
