@@ -1,10 +1,15 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import api from "@/api.ts";
 import { ProjectResponse } from "@/projects/types.ts";
 import { useIssueListStore } from "@/issues/store.ts";
 import { columns } from "@/issues/columns.tsx";
 import { IssuesTable } from "@/issues/issues-table.tsx";
+import { ENDPOINTS } from "@/endpoints.ts";
+
+export const ProjectContext = createContext<ProjectResponse | undefined>(
+    undefined,
+);
 
 export default function Project() {
     const setIssues = useIssueListStore((s) => s.setIssues);
@@ -13,21 +18,23 @@ export default function Project() {
     const [project, setProject] = useState<ProjectResponse>();
 
     useEffect(() => {
-        api.get(`/projects/${id}`)
-            .then((r) => {
-                setProject(r.data);
-                setIssues(r.data.issues);
-            })
-            .catch((e) => {
-                console.log(e);
-            });
+        if (id) {
+            api.get(ENDPOINTS.PROJECT_WITH_ID(id))
+                .then((r) => {
+                    setProject(r.data);
+                    setIssues(r.data.issues);
+                })
+                .catch((e) => {
+                    console.log(e);
+                });
+        }
     }, [id]);
 
     return (
-        <>
+        <ProjectContext.Provider value={project}>
             <div className="flex grow justify-center">
                 <div className="w-2/3 mt-12">
-                    {project && (
+                    {project && id && (
                         <>
                             <h1 className="text-3xl font-extrabold">
                                 {project.name}
@@ -39,6 +46,6 @@ export default function Project() {
                     )}
                 </div>
             </div>
-        </>
+        </ProjectContext.Provider>
     );
 }

@@ -15,7 +15,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 
-import { FormEvent, KeyboardEvent, useState } from "react";
+import { FormEvent, KeyboardEvent, useContext, useState } from "react";
 import { Issue, PartialIssue, IssueType } from "@/issues/types.ts";
 import { ENDPOINTS } from "@/endpoints.ts";
 import IssueDetails from "@/issues/issue-details.tsx";
@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input";
 import { useIssueListStore } from "./store";
 import api from "@/api.ts";
 import { toast } from "@/hooks/use-toast.ts";
+import { ProjectContext } from "@/routes/project.tsx";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -40,6 +41,7 @@ export function IssuesTable<TData, TValue>({
 
     const [newItemName, setNewItemName] = useState("");
     const [isAddingNew, setIsAddingNew] = useState(false);
+    const project = useContext(ProjectContext);
 
     const handleAddNew = () => {
         setIsAddingNew(true);
@@ -52,9 +54,10 @@ export function IssuesTable<TData, TValue>({
             setIsAddingNew(false);
         }
 
-        api.post<PartialIssue>(ENDPOINTS.ISSUES, {
+        api.post<PartialIssue>(ENDPOINTS.ISSUES(project!.id), {
             name: newItemName,
             type: IssueType.Task,
+            laneId: project?.lanes[0].id,
         })
             .then((res) => {
                 const newIssue = res.data as PartialIssue;
@@ -70,7 +73,7 @@ export function IssuesTable<TData, TValue>({
     };
 
     const handleKeyPressNew = (event: KeyboardEvent) => {
-        if (event.key === "Escape" && !event.shiftKey) {
+        if (event.key === "Escape") {
             setIsAddingNew(false);
         }
     };
@@ -98,8 +101,9 @@ export function IssuesTable<TData, TValue>({
     };
 
     const getIssueData = async (id: number): Promise<Issue | void> => {
+        console.log(ENDPOINTS.ISSUE_WITH_ID(id, project!.id));
         return api
-            .get<Issue>(ENDPOINTS.ISSUES_WITH_ID(id))
+            .get<Issue>(ENDPOINTS.ISSUE_WITH_ID(id, project!.id))
             .then((res) => res.data)
             .catch((error) => {
                 toast({

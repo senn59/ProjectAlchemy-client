@@ -10,6 +10,8 @@ import { ENDPOINTS } from "@/endpoints.ts";
 import { useToast } from "@/hooks/use-toast.ts";
 import { useIssueListStore } from "./store";
 import api from "@/api.ts";
+import { useContext } from "react";
+import { ProjectContext } from "@/routes/project.tsx";
 
 interface IssueTypeSelectProps {
     issueId: number;
@@ -21,6 +23,7 @@ export default function IssueTypeSelect(props: IssueTypeSelectProps) {
         (s) => s.issues.find((i) => i.id === props.issueId)?.type,
     );
     const updateTableRow = useIssueListStore((s) => s.updateRowField);
+    const project = useContext(ProjectContext);
     const { toast } = useToast();
 
     const onIssueTypeChange = (value: string) => {
@@ -39,7 +42,7 @@ export default function IssueTypeSelect(props: IssueTypeSelectProps) {
                 value: type,
             },
         ];
-        api.patch(ENDPOINTS.ISSUES_WITH_ID(props.issueId), request)
+        api.patch(ENDPOINTS.ISSUE_WITH_ID(props.issueId, project!.id), request)
             .then(() => {
                 toast({
                     title: "Success",

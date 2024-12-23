@@ -8,13 +8,14 @@ import {
 import { Label } from "@/components/ui/label.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import IssueTypeSelect from "@/issues/issue-type-select.tsx";
-import { KeyboardEvent, useEffect, useRef, useState } from "react";
+import { KeyboardEvent, useContext, useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input.tsx";
 import { Textarea } from "@/components/ui/textarea.tsx";
 import { ENDPOINTS } from "@/endpoints";
 import { useIssueListStore } from "./store";
 import api from "@/api.ts";
 import { toast } from "@/hooks/use-toast.ts";
+import { ProjectContext } from "@/routes/project.tsx";
 
 interface IssueTypeSelectProps {
     issue: Issue;
@@ -38,6 +39,7 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
         name: false,
         description: false,
     });
+    const project = useContext(ProjectContext);
 
     useEffect(() => {
         if (isEditing["description"] && textareaRef.current) {
@@ -60,7 +62,7 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                 value: editableFields[issueField],
             },
         ];
-        api.patch(ENDPOINTS.ISSUES_WITH_ID(props.issue.id), request)
+        api.patch(ENDPOINTS.ISSUE_WITH_ID(props.issue.id, project!.id), request)
             .then((res) => {
                 const updatesIssue = res.data as Issue;
                 updateTableRow(
