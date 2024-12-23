@@ -22,6 +22,7 @@ export default function Project() {
                 console.log(e);
             });
     }, [id]);
+
     return (
         <>
             {project && (
