@@ -21,9 +21,6 @@ function Navbar() {
                     <Button variant={"ghost"}>
                         <Link to="/projects">Projects</Link>
                     </Button>
-                    <Button variant={"ghost"}>
-                        <Link to="/board">Board</Link>
-                    </Button>
                 </div>
                 <div className="pr-5 flex">
                     <div className="mr-4">

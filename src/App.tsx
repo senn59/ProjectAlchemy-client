@@ -1,7 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import { ThemeProvider } from "@/components/shadcn/theme-provider.tsx";
-import Board from "@/routes/board";
 import Layout from "@/routes/layout";
 import Signin from "@/routes/signin";
 import Index from "./routes";
@@ -25,7 +24,6 @@ function App() {
                         </Route>
                         <Route element={<Protected />}>
                             <Route element={<Layout />}>
-                                <Route path="board" element={<Board />} />
                                 <Route path="projects" element={<Projects />} />
                                 <Route
                                     path="projects/:id"
