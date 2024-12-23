@@ -57,11 +57,9 @@ function Projects() {
                                     {p.memberType}
                                 </TableCell>
                                 <TableCell className="font-medium text-right">
-                                    <Button variant="outline">
-                                        <Link to={`../projects/${p.projectId}`}>
-                                            Open
-                                        </Link>
-                                    </Button>
+                                    <Link to={`../projects/${p.projectId}`}>
+                                        <Button variant="outline">Open</Button>
+                                    </Link>
                                 </TableCell>
                             </TableRow>
                         ))}

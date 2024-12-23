@@ -18,9 +18,9 @@ function Navbar() {
             <div className="w-screen h-16 flex items-center justify-between">
                 <div className="w-full flex items-center">
                     <h1 className="pr-4 pl-4 font-bold">ProjectAlchemy</h1>
-                    <Button variant={"ghost"}>
-                        <Link to="/projects">Projects</Link>
-                    </Button>
+                    <Link to="/projects">
+                        <Button variant={"ghost"}>Projects</Button>
+                    </Link>
                 </div>
                 <div className="pr-5 flex">
                     <div className="mr-4">
