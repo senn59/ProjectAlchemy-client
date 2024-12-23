@@ -22,4 +22,10 @@ export const columns: ColumnDef<PartialIssue>[] = [
         size: 0,
         cell: ({ row }) => <div className="pl-8">{row.getValue("name")}</div>,
     },
+    {
+        accessorKey: "lane",
+        header: "Status",
+        size: 100,
+        cell: ({ row }) => <div>{row.getValue("lane").name}</div>,
+    },
 ];
