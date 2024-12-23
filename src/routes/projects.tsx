@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/table";
 import NewProject from "@/projects/new-project.tsx";
 import { toast } from "@/hooks/use-toast.ts";
+import { Button } from "@/components/ui/button.tsx";
+import { Link } from "react-router-dom";
 
 function Projects() {
     const [projects, setProjects] = useState<ProjectOverview[]>([]);
@@ -41,6 +43,7 @@ function Projects() {
                         <TableRow>
                             <TableHead className="w-[100px]">Name</TableHead>
                             <TableHead className="text-right">Member</TableHead>
+                            <TableHead className="text-right">Action</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -51,6 +54,13 @@ function Projects() {
                                 </TableCell>
                                 <TableCell className="font-medium text-right">
                                     {p.memberType}
+                                </TableCell>
+                                <TableCell className="font-medium text-right">
+                                    <Button variant="outline">
+                                        <Link to={`../projects/${p.projectId}`}>
+                                            Open
+                                        </Link>
+                                    </Button>
                                 </TableCell>
                             </TableRow>
                         ))}

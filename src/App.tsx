@@ -9,6 +9,7 @@ import Protected from "@/routes/protected.tsx";
 import Signup from "@/routes/signup.tsx";
 import { Toaster } from "@/components/ui/toaster.tsx";
 import Projects from "@/routes/projects.tsx";
+import Project from "@/routes/project.tsx";
 
 function App() {
     return (
@@ -26,6 +27,10 @@ function App() {
                             <Route element={<Layout />}>
                                 <Route path="board" element={<Board />} />
                                 <Route path="projects" element={<Projects />} />
+                                <Route
+                                    path="projects/:id"
+                                    element={<Project />}
+                                />
                             </Route>
                         </Route>
                     </Routes>
