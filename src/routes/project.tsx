@@ -25,14 +25,20 @@ export default function Project() {
 
     return (
         <>
-            {project && (
-                <>
-                    <div className="flex-grow flex items-center justify-center flex-col">
-                        <h1>{project.name}</h1>
-                        <DataTable columns={columns} data={issues} />
-                    </div>
-                </>
-            )}
+            <div className="flex grow justify-center">
+                <div className="w-2/3 mt-12">
+                    {project && (
+                        <>
+                            <h1 className="text-3xl font-extrabold">
+                                {project.name}
+                            </h1>
+                            <div className=" mt-12">
+                                <DataTable columns={columns} data={issues} />
+                            </div>
+                        </>
+                    )}
+                </div>
+            </div>
         </>
     );
 }
