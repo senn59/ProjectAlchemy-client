@@ -4,7 +4,7 @@ import api from "@/api.ts";
 import { ProjectResponse } from "@/projects/types.ts";
 import { useIssueListStore } from "@/issues/store.ts";
 import { columns } from "@/issues/columns.tsx";
-import { DataTable } from "@/issues/data-table.tsx";
+import { IssuesTable } from "@/issues/issues-table.tsx";
 
 export default function Project() {
     const setIssues = useIssueListStore((s) => s.setIssues);
@@ -33,7 +33,7 @@ export default function Project() {
                                 {project.name}
                             </h1>
                             <div className=" mt-12">
-                                <DataTable columns={columns} data={issues} />
+                                <IssuesTable columns={columns} data={issues} />
                             </div>
                         </>
                     )}
