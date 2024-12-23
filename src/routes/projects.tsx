@@ -13,12 +13,13 @@ import NewProject from "@/projects/new-project.tsx";
 import { toast } from "@/hooks/use-toast.ts";
 import { Button } from "@/components/ui/button.tsx";
 import { Link } from "react-router-dom";
+import { ENDPOINTS } from "@/endpoints.ts";
 
 function Projects() {
     const [projects, setProjects] = useState<ProjectOverview[]>([]);
 
     useEffect(() => {
-        api.get("/projects")
+        api.get(ENDPOINTS.PROJECTS)
             .then((res) => setProjects(res.data))
             .catch((res) => {
                 toast({
