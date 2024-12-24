@@ -9,7 +9,8 @@ import { IssueType } from "@/issues/types.ts";
 import { ENDPOINTS } from "@/endpoints.ts";
 import { useToast } from "@/hooks/use-toast.ts";
 import api from "@/api.ts";
-import { useProjectStore } from "@/projects/store.ts";
+import { useContext } from "react";
+import { ProjectContext } from "@/projects/context.ts";
 
 interface IssueTypeSelectProps {
     issueId: number;
@@ -17,7 +18,7 @@ interface IssueTypeSelectProps {
 }
 
 export default function IssueTypeSelect(props: IssueTypeSelectProps) {
-    const { project, updateIssueField } = useProjectStore();
+    const { project, setProject } = useContext(ProjectContext);
     let issueType = project.issues.find((i) => i.id === props.issueId)?.type;
     const { toast } = useToast();
 
@@ -25,7 +26,15 @@ export default function IssueTypeSelect(props: IssueTypeSelectProps) {
         const issueTypeKey = value as keyof typeof IssueType;
         const newIssueType = IssueType[issueTypeKey];
         updateIssueType(newIssueType);
-        updateIssueField(props.issueId, "type", newIssueType);
+        setProject((prev) => ({
+            ...prev,
+            issues: prev.issues.map((issue) => {
+                if (issue.id === props.issueId) {
+                    issue.type = newIssueType;
+                }
+                return issue;
+            }),
+        }));
     };
 
     const updateIssueType = (type: IssueType) => {
