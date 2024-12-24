@@ -12,10 +12,9 @@ import { KeyboardEvent, useContext, useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input.tsx";
 import { Textarea } from "@/components/ui/textarea.tsx";
 import { ENDPOINTS } from "@/endpoints";
-import { useIssueListStore } from "./store";
 import api from "@/api.ts";
 import { toast } from "@/hooks/use-toast.ts";
-import { ProjectContext } from "@/routes/project.tsx";
+import { ProjectContext } from "@/projects/context.ts";
 
 interface IssueTypeSelectProps {
     issue: Issue;
@@ -30,7 +29,6 @@ interface EditableFields {
 
 export default function IssueDetails(props: IssueTypeSelectProps) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-    const updateTableRow = useIssueListStore((s) => s.updateRowField);
     const [editableFields, setEditableFields] = useState<EditableFields>({
         name: props.issue.name,
         description: props.issue.description,
@@ -39,7 +37,7 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
         name: false,
         description: false,
     });
-    const project = useContext(ProjectContext);
+    const { project, setProject } = useContext(ProjectContext);
 
     useEffect(() => {
         if (isEditing["description"] && textareaRef.current) {
@@ -62,13 +60,29 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                 value: editableFields[issueField],
             },
         ];
-        api.patch(ENDPOINTS.ISSUE_WITH_ID(props.issue.id, project!.id), request)
+        const updateIssue = <K extends keyof PartialIssue>(
+            id: number,
+            field: K,
+            value: PartialIssue[K],
+        ) => {
+            setProject((prev) => ({
+                ...prev,
+                issues: prev.issues.map((issue) => {
+                    if (issue.id === id) {
+                        issue[field] = value;
+                    }
+                    return issue;
+                }),
+            }));
+        };
+
+        api.patch(ENDPOINTS.ISSUE_WITH_ID(props.issue.id, project.id), request)
             .then((res) => {
-                const updatesIssue = res.data as Issue;
-                updateTableRow(
+                const updatedIssue = res.data as Issue;
+                updateIssue(
                     props.issue.id,
                     issueField as keyof PartialIssue,
-                    updatesIssue[issueField],
+                    updatedIssue[issueField],
                 );
             })
             .catch((error) => {

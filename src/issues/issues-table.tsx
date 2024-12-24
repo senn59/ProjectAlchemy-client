@@ -1,5 +1,4 @@
 import {
-    ColumnDef,
     flexRender,
     getCoreRowModel,
     Row,
@@ -21,27 +20,18 @@ import { ENDPOINTS } from "@/endpoints.ts";
 import IssueDetails from "@/issues/issue-details.tsx";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useIssueListStore } from "./store";
 import api from "@/api.ts";
 import { toast } from "@/hooks/use-toast.ts";
-import { ProjectContext } from "@/routes/project.tsx";
+import { ProjectContext } from "@/projects/context.ts";
+import { columns } from "@/issues/columns.tsx";
 
-interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[];
-    data: TData[];
-}
-
-export function IssuesTable<TData, TValue>({
-    columns,
-    data,
-}: DataTableProps<TData, TValue>) {
-    const addIssueToTable = useIssueListStore((s) => s.addIssue);
+export function IssuesTable() {
     const [selectedRow, setSelectedRow] = useState<Issue | null>(null);
     const [isOpenSheet, setIsOpenSheet] = useState(false);
 
     const [newItemName, setNewItemName] = useState("");
     const [isAddingNew, setIsAddingNew] = useState(false);
-    const project = useContext(ProjectContext);
+    const { project, setProject } = useContext(ProjectContext);
 
     const handleAddNew = () => {
         setIsAddingNew(true);
@@ -54,14 +44,17 @@ export function IssuesTable<TData, TValue>({
             setIsAddingNew(false);
         }
 
-        api.post<PartialIssue>(ENDPOINTS.ISSUES(project!.id), {
+        api.post<PartialIssue>(ENDPOINTS.ISSUES(project.id), {
             name: newItemName,
             type: IssueType.Task,
-            laneId: project?.lanes[0].id,
+            laneId: project.lanes[0].id,
         })
             .then((res) => {
                 const newIssue = res.data as PartialIssue;
-                addIssueToTable(newIssue);
+                setProject((prev) => ({
+                    ...prev,
+                    issues: [...(prev.issues || []), newIssue],
+                }));
             })
             .catch((error) => {
                 toast({
@@ -79,12 +72,12 @@ export function IssuesTable<TData, TValue>({
     };
 
     const table = useReactTable({
-        data,
+        data: project.issues,
         columns,
         getCoreRowModel: getCoreRowModel(),
     });
 
-    const openRow = async (row: Row<TData>) => {
+    const openRow = async (row: Row<PartialIssue>) => {
         table.toggleAllPageRowsSelected(false);
         row.toggleSelected();
         if (!row.getIsSelected()) {
@@ -101,9 +94,8 @@ export function IssuesTable<TData, TValue>({
     };
 
     const getIssueData = async (id: number): Promise<Issue | void> => {
-        console.log(ENDPOINTS.ISSUE_WITH_ID(id, project!.id));
         return api
-            .get<Issue>(ENDPOINTS.ISSUE_WITH_ID(id, project!.id))
+            .get<Issue>(ENDPOINTS.ISSUE_WITH_ID(id, project.id))
             .then((res) => res.data)
             .catch((error) => {
                 toast({

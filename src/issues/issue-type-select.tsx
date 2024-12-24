@@ -8,10 +8,9 @@ import {
 import { IssueType } from "@/issues/types.ts";
 import { ENDPOINTS } from "@/endpoints.ts";
 import { useToast } from "@/hooks/use-toast.ts";
-import { useIssueListStore } from "./store";
 import api from "@/api.ts";
 import { useContext } from "react";
-import { ProjectContext } from "@/routes/project.tsx";
+import { ProjectContext } from "@/projects/context.ts";
 
 interface IssueTypeSelectProps {
     issueId: number;
@@ -19,18 +18,23 @@ interface IssueTypeSelectProps {
 }
 
 export default function IssueTypeSelect(props: IssueTypeSelectProps) {
-    let issueType: IssueType | undefined = useIssueListStore(
-        (s) => s.issues.find((i) => i.id === props.issueId)?.type,
-    );
-    const updateTableRow = useIssueListStore((s) => s.updateRowField);
-    const project = useContext(ProjectContext);
+    const { project, setProject } = useContext(ProjectContext);
+    let issueType = project.issues.find((i) => i.id === props.issueId)?.type;
     const { toast } = useToast();
 
     const onIssueTypeChange = (value: string) => {
         const issueTypeKey = value as keyof typeof IssueType;
         const newIssueType = IssueType[issueTypeKey];
         updateIssueType(newIssueType);
-        updateTableRow(props.issueId, "type", newIssueType);
+        setProject((prev) => ({
+            ...prev,
+            issues: prev.issues.map((issue) => {
+                if (issue.id === props.issueId) {
+                    issue.type = newIssueType;
+                }
+                return issue;
+            }),
+        }));
     };
 
     const updateIssueType = (type: IssueType) => {
