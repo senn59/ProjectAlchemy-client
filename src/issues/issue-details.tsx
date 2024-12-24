@@ -8,13 +8,13 @@ import {
 import { Label } from "@/components/ui/label.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import IssueTypeSelect from "@/issues/issue-type-select.tsx";
-import { KeyboardEvent, useContext, useEffect, useRef, useState } from "react";
+import { KeyboardEvent, useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input.tsx";
 import { Textarea } from "@/components/ui/textarea.tsx";
 import { ENDPOINTS } from "@/endpoints";
 import api from "@/api.ts";
 import { toast } from "@/hooks/use-toast.ts";
-import { ProjectContext } from "@/projects/context.ts";
+import { useProjectStore } from "@/projects/store.ts";
 
 interface IssueTypeSelectProps {
     issue: Issue;
@@ -37,7 +37,7 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
         name: false,
         description: false,
     });
-    const { project, setProject } = useContext(ProjectContext);
+    const { project, updateIssueField } = useProjectStore();
 
     useEffect(() => {
         if (isEditing["description"] && textareaRef.current) {
@@ -60,26 +60,11 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                 value: editableFields[issueField],
             },
         ];
-        const updateIssue = <K extends keyof PartialIssue>(
-            id: number,
-            field: K,
-            value: PartialIssue[K],
-        ) => {
-            setProject((prev) => ({
-                ...prev,
-                issues: prev.issues.map((issue) => {
-                    if (issue.id === id) {
-                        issue[field] = value;
-                    }
-                    return issue;
-                }),
-            }));
-        };
 
         api.patch(ENDPOINTS.ISSUE_WITH_ID(props.issue.id, project.id), request)
             .then((res) => {
                 const updatedIssue = res.data as Issue;
-                updateIssue(
+                updateIssueField(
                     props.issue.id,
                     issueField as keyof PartialIssue,
                     updatedIssue[issueField],

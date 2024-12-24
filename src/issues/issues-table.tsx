@@ -14,7 +14,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 
-import { FormEvent, KeyboardEvent, useContext, useState } from "react";
+import { FormEvent, KeyboardEvent, useState } from "react";
 import { Issue, PartialIssue, IssueType } from "@/issues/types.ts";
 import { ENDPOINTS } from "@/endpoints.ts";
 import IssueDetails from "@/issues/issue-details.tsx";
@@ -22,8 +22,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import api from "@/api.ts";
 import { toast } from "@/hooks/use-toast.ts";
-import { ProjectContext } from "@/projects/context.ts";
 import { columns } from "@/issues/columns.tsx";
+import { useProjectStore } from "@/projects/store.ts";
 
 export function IssuesTable() {
     const [selectedRow, setSelectedRow] = useState<Issue | null>(null);
@@ -31,7 +31,7 @@ export function IssuesTable() {
 
     const [newItemName, setNewItemName] = useState("");
     const [isAddingNew, setIsAddingNew] = useState(false);
-    const { project, setProject } = useContext(ProjectContext);
+    const { project, addIssue } = useProjectStore();
 
     const handleAddNew = () => {
         setIsAddingNew(true);
@@ -51,10 +51,7 @@ export function IssuesTable() {
         })
             .then((res) => {
                 const newIssue = res.data as PartialIssue;
-                setProject((prev) => ({
-                    ...prev,
-                    issues: [...(prev.issues || []), newIssue],
-                }));
+                addIssue(newIssue);
             })
             .catch((error) => {
                 toast({
@@ -108,6 +105,7 @@ export function IssuesTable() {
 
     return (
         <div className="rounded-md border">
+            {" "}
             {selectedRow != null && (
                 <IssueDetails
                     issue={selectedRow}
