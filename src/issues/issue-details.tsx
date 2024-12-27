@@ -47,7 +47,29 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
 
     const handleDeleteClick = () => {
         if (confirming) {
-            console.log("delete issue");
+            api.delete(ENDPOINTS.ISSUE_WITH_ID(props.issue.id, project.id))
+                .then(() => {
+                    setProject((prev) => ({
+                        ...prev,
+                        issues: prev.issues.filter((i) => {
+                            if (i.id != props.issue.id) {
+                                return i;
+                            }
+                        }),
+                    }));
+                    props.onOpenChange(false);
+                    toast({
+                        title: "Success",
+                        description: "Succesfully deleted issue!",
+                    });
+                })
+                .catch((e) => {
+                    toast({
+                        title: "Error while deleting issue",
+                        description: e.message,
+                        variant: "destructive",
+                    });
+                });
             setConfirming(false);
         } else {
             setConfirming(true);
