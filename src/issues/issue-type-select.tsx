@@ -9,17 +9,17 @@ import { IssueType } from "@/issues/types.ts";
 import { ENDPOINTS } from "@/endpoints.ts";
 import { useToast } from "@/hooks/use-toast.ts";
 import api from "@/api.ts";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { ProjectContext } from "@/projects/context.ts";
 
 interface IssueTypeSelectProps {
     issueId: number;
-    silent: boolean;
+    currentType: IssueType;
 }
 
 export default function IssueTypeSelect(props: IssueTypeSelectProps) {
     const { project, setProject } = useContext(ProjectContext);
-    let issueType = project.issues.find((i) => i.id === props.issueId)?.type;
+    const [type, setType] = useState<IssueType>(props.currentType);
     const { toast } = useToast();
 
     const onIssueTypeChange = (value: string) => {
@@ -38,7 +38,7 @@ export default function IssueTypeSelect(props: IssueTypeSelectProps) {
     };
 
     const updateIssueType = (type: IssueType) => {
-        issueType = type;
+        setType(type);
         const request = [
             {
                 op: "replace",
@@ -63,24 +63,19 @@ export default function IssueTypeSelect(props: IssueTypeSelectProps) {
     };
 
     return (
-        issueType !== undefined && (
-            <Select
-                onValueChange={onIssueTypeChange}
-                value={issueType.toString()}
-            >
-                <SelectTrigger>
-                    <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                    {Object.keys(IssueType)
-                        .filter((key) => isNaN(Number(key)))
-                        .map((type, index) => (
-                            <SelectItem value={type} key={index}>
-                                {type}
-                            </SelectItem>
-                        ))}
-                </SelectContent>
-            </Select>
-        )
+        <Select onValueChange={onIssueTypeChange} value={type.toString()}>
+            <SelectTrigger>
+                <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+                {Object.keys(IssueType)
+                    .filter((key) => isNaN(Number(key)))
+                    .map((type, index) => (
+                        <SelectItem value={type} key={index}>
+                            {type}
+                        </SelectItem>
+                    ))}
+            </SelectContent>
+        </Select>
     );
 }

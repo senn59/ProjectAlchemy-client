@@ -2,6 +2,7 @@ import { Issue, PartialIssue } from "@/issues/types.ts";
 import {
     Sheet,
     SheetContent,
+    SheetDescription,
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet.tsx";
@@ -106,6 +107,9 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                 <SheetContent>
                     <SheetHeader>
                         <SheetTitle>Issue {props.issue.id}</SheetTitle>
+                        <SheetDescription>
+                            A more detailed view of your issue.
+                        </SheetDescription>
                     </SheetHeader>
                     <div className={"mt-10"}>
                         <div className={"sheet-field-cnt"}>
@@ -175,7 +179,7 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                             <Label className={"pl-1"}>Type</Label>
                             <IssueTypeSelect
                                 issueId={props.issue.id}
-                                silent={true}
+                                currentType={props.issue.type}
                             />
                         </div>
                     </div>
