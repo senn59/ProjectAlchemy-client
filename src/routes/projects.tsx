@@ -14,13 +14,18 @@ import { toast } from "@/hooks/use-toast.ts";
 import { Button } from "@/components/ui/button.tsx";
 import { Link } from "react-router-dom";
 import { ENDPOINTS } from "@/endpoints.ts";
+import { Loader } from "@/components/Loader.tsx";
 
 function Projects() {
     const [projects, setProjects] = useState<ProjectOverview[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
         api.get(ENDPOINTS.PROJECTS)
-            .then((res) => setProjects(res.data))
+            .then((res) => {
+                setProjects(res.data);
+                setLoading(false);
+            })
             .catch((res) => {
                 toast({
                     variant: "destructive",
@@ -48,21 +53,33 @@ function Projects() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {projects.map((p) => (
-                            <TableRow key={p.projectId}>
-                                <TableCell className="font-medium">
-                                    {p.projectName}
-                                </TableCell>
-                                <TableCell className="font-medium text-right">
-                                    {p.memberType}
-                                </TableCell>
-                                <TableCell className="font-medium text-right">
-                                    <Link to={`../projects/${p.projectId}`}>
-                                        <Button variant="outline">Open</Button>
-                                    </Link>
+                        {loading ? (
+                            <TableRow>
+                                <TableCell colSpan={3}>
+                                    <div className="flex justify-center mt-24">
+                                        <Loader />
+                                    </div>
                                 </TableCell>
                             </TableRow>
-                        ))}
+                        ) : (
+                            projects.map((p) => (
+                                <TableRow key={p.projectId}>
+                                    <TableCell className="font-medium">
+                                        {p.projectName}
+                                    </TableCell>
+                                    <TableCell className="font-medium text-right">
+                                        {p.memberType}
+                                    </TableCell>
+                                    <TableCell className="font-medium text-right">
+                                        <Link to={`../projects/${p.projectId}`}>
+                                            <Button variant="outline">
+                                                Open
+                                            </Button>
+                                        </Link>
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        )}
                     </TableBody>
                 </Table>
             </div>

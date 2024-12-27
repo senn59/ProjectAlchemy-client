@@ -6,6 +6,7 @@ import { IssuesTable } from "@/issues/issues-table.tsx";
 import { ENDPOINTS } from "@/endpoints.ts";
 import { ProjectContext } from "@/projects/context.ts";
 import { toast } from "@/hooks/use-toast.ts";
+import { Loader } from "@/components/Loader.tsx";
 
 export default function Project() {
     const { id } = useParams();
@@ -13,11 +14,14 @@ export default function Project() {
         {} as ProjectResponse,
     );
 
+    const [loading, setLoading] = useState<boolean>(true);
+
     useEffect(() => {
         if (id) {
             api.get(ENDPOINTS.PROJECT_WITH_ID(id))
                 .then((r) => {
                     setProject(r.data);
+                    setLoading(false);
                 })
                 .catch((err) => {
                     toast({
@@ -29,7 +33,7 @@ export default function Project() {
         }
     }, [id]);
 
-    return project ? (
+    return !loading ? (
         <ProjectContext.Provider value={{ project, setProject }}>
             <div className="flex grow justify-center">
                 <div className="w-2/3 mt-12">
@@ -47,6 +51,8 @@ export default function Project() {
             </div>
         </ProjectContext.Provider>
     ) : (
-        <div>loading</div>
+        <div className="flex grow justify-center items-center">
+            <Loader />
+        </div>
     );
 }
