@@ -30,15 +30,29 @@ interface EditableFields {
 
 export default function IssueDetails(props: IssueTypeSelectProps) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+
     const [editableFields, setEditableFields] = useState<EditableFields>({
         name: props.issue.name,
         description: props.issue.description,
     });
+
     const [isEditing, setEditing] = useState<Record<string, boolean>>({
         name: false,
         description: false,
     });
+
     const { project, setProject } = useContext(ProjectContext);
+
+    const [confirming, setConfirming] = useState<boolean>(false);
+
+    const handleDeleteClick = () => {
+        if (confirming) {
+            console.log("delete issue");
+            setConfirming(false);
+        } else {
+            setConfirming(true);
+        }
+    };
 
     useEffect(() => {
         if (isEditing["description"] && textareaRef.current) {
@@ -182,6 +196,15 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                                 currentType={props.issue.type}
                             />
                         </div>
+                    </div>
+                    <div className="absolute bottom-8 right-8">
+                        <Button
+                            onClick={handleDeleteClick}
+                            onBlur={() => setConfirming(false)}
+                            variant="destructive"
+                        >
+                            {!confirming ? "Delete" : "Are you sure?"}
+                        </Button>
                     </div>
                 </SheetContent>
             )}
