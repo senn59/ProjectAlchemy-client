@@ -42,7 +42,7 @@ export default function Project() {
                             <h1 className="text-3xl font-extrabold">
                                 {project.name}
                             </h1>
-                            <div className=" mt-12">
+                            <div className="my-12">
                                 <IssuesTable />
                             </div>
                         </>
