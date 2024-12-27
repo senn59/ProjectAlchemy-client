@@ -5,6 +5,7 @@ import { ProjectResponse } from "@/projects/types.ts";
 import { IssuesTable } from "@/issues/issues-table.tsx";
 import { ENDPOINTS } from "@/endpoints.ts";
 import { ProjectContext } from "@/projects/context.ts";
+import { toast } from "@/hooks/use-toast.ts";
 
 export default function Project() {
     const { id } = useParams();
@@ -18,8 +19,12 @@ export default function Project() {
                 .then((r) => {
                     setProject(r.data);
                 })
-                .catch((e) => {
-                    console.log(e);
+                .catch((err) => {
+                    toast({
+                        variant: "destructive",
+                        title: "Error while creating project",
+                        description: err?.message,
+                    });
                 });
         }
     }, [id]);
