@@ -24,8 +24,10 @@ import {
 } from "@/components/ui/form.tsx";
 import api from "@/api.ts";
 import { toast } from "@/hooks/use-toast.ts";
+import { useNavigate } from "react-router-dom";
 
 function NewProject() {
+    const navigator = useNavigate();
     const formSchema = z.object({
         name: z
             .string()
@@ -39,10 +41,11 @@ function NewProject() {
             name: "",
         },
     });
+
     const onSubmit = (values: z.infer<typeof formSchema>) => {
         api.post("/projects", { name: values.name })
             .then((res) => {
-                console.log(res);
+                navigator(`/projects/${res.data.id}`);
             })
             .catch((err) => {
                 toast({
