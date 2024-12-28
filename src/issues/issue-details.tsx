@@ -216,6 +216,7 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                             <IssueTypeSelect
                                 issueId={props.issue.id}
                                 currentType={props.issue.type}
+                                compact={false}
                             />
                         </div>
                     </div>

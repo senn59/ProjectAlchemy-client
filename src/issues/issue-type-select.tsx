@@ -9,12 +9,18 @@ import { IssueType } from "@/issues/types.ts";
 import { ENDPOINTS } from "@/endpoints.ts";
 import { useToast } from "@/hooks/use-toast.ts";
 import api from "@/api.ts";
-import { useContext, useState } from "react";
+import { ReactNode, useContext, useState } from "react";
 import { ProjectContext } from "@/projects/context.ts";
+import {
+    LucideBug,
+    LucideClipboardCheck,
+    LucideScrollText,
+} from "lucide-react";
 
 interface IssueTypeSelectProps {
     issueId: number;
     currentType: IssueType;
+    compact: boolean;
 }
 
 export default function IssueTypeSelect(props: IssueTypeSelectProps) {
@@ -62,19 +68,45 @@ export default function IssueTypeSelect(props: IssueTypeSelectProps) {
             });
     };
 
+    const getIcon = (type: IssueType): ReactNode => {
+        const size = "20";
+        switch (type) {
+            case IssueType.Task:
+                return <LucideClipboardCheck size={size} />;
+            case IssueType.UserStory:
+                return <LucideScrollText size={size} />;
+            case IssueType.Bug:
+                return <LucideBug size={size} />;
+        }
+    };
+
     return (
         <Select onValueChange={onIssueTypeChange} value={type.toString()}>
             <SelectTrigger>
-                <SelectValue />
+                <SelectValue>
+                    {props.compact ? (
+                        getIcon(type)
+                    ) : (
+                        <div className="flex">
+                            {getIcon(type as IssueType)}
+                            <div className="pl-3">{type}</div>
+                        </div>
+                    )}
+                </SelectValue>
             </SelectTrigger>
             <SelectContent>
                 {Object.keys(IssueType)
                     .filter((key) => isNaN(Number(key)))
-                    .map((type, index) => (
-                        <SelectItem value={type} key={index}>
-                            {type}
-                        </SelectItem>
-                    ))}
+                    .map((type, index) => {
+                        return (
+                            <SelectItem value={type} key={index}>
+                                <div className="flex">
+                                    {getIcon(type as IssueType)}
+                                    <div className="pl-3">{type}</div>
+                                </div>
+                            </SelectItem>
+                        );
+                    })}
             </SelectContent>
         </Select>
     );

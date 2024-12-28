@@ -14,10 +14,14 @@ export const columns: ColumnDef<PartialIssue>[] = [
         header: "Type",
         size: 5,
         cell: ({ row }) => (
-            <IssueTypeSelect
-                issueId={row.getValue("id")}
-                currentType={row.getValue("type")}
-            />
+            <div>
+                <IssueTypeSelect
+                    issueId={row.getValue("id")}
+                    currentType={row.getValue("type")}
+                    compact={true}
+                    key={row.getValue("type")}
+                />
+            </div>
         ),
     },
     {
