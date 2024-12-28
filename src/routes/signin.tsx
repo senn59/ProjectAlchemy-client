@@ -56,7 +56,7 @@ export default function Signin() {
                 } else {
                     setUser(res.data.user);
                     setJwt(res.data.session.access_token);
-                    navigate("/board");
+                    navigate("/");
                 }
             })
             .catch(() => {

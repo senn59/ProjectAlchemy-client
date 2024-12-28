@@ -10,7 +10,7 @@ export default function Index() {
 
     useEffect(() => {
         if (user != null && jwt != null) {
-            navigate("/board");
+            navigate("/projects");
         }
     }, [jwt, user]);
 

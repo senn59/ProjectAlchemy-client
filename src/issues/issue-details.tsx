@@ -2,19 +2,22 @@ import { Issue, PartialIssue } from "@/issues/types.ts";
 import {
     Sheet,
     SheetContent,
+    SheetDescription,
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import IssueTypeSelect from "@/issues/issue-type-select.tsx";
-import { KeyboardEvent, useEffect, useRef, useState } from "react";
+import { KeyboardEvent, useContext, useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input.tsx";
 import { Textarea } from "@/components/ui/textarea.tsx";
 import { ENDPOINTS } from "@/endpoints";
-import { useIssueListStore } from "./store";
 import api from "@/api.ts";
 import { toast } from "@/hooks/use-toast.ts";
+import { ProjectContext } from "@/projects/context.ts";
+import { IssueLaneSelect } from "@/issues/issue-lane-select.tsx";
+import { z } from "zod";
 
 interface IssueTypeSelectProps {
     issue: Issue;
@@ -26,18 +29,22 @@ interface EditableFields {
     name: string;
     description: string;
 }
-
 export default function IssueDetails(props: IssueTypeSelectProps) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-    const updateTableRow = useIssueListStore((s) => s.updateRowField);
     const [editableFields, setEditableFields] = useState<EditableFields>({
         name: props.issue.name,
         description: props.issue.description,
     });
+    const [fieldError, setFieldError] = useState<string>("");
     const [isEditing, setEditing] = useState<Record<string, boolean>>({
         name: false,
         description: false,
     });
+    const { project, setProject } = useContext(ProjectContext);
+    const [confirming, setConfirming] = useState<boolean>(false);
+
+    const nameFormSchema = z.string().min(1).max(30);
+    const descriptionFormSchema = z.string().max(200);
 
     useEffect(() => {
         if (isEditing["description"] && textareaRef.current) {
@@ -46,11 +53,59 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
         }
     }, [isEditing]);
 
+    useEffect(() => {
+        try {
+            nameFormSchema.parse(editableFields.name);
+            descriptionFormSchema.parse(editableFields.description);
+            setFieldError("");
+        } catch (e) {
+            if (e instanceof z.ZodError) {
+                setFieldError(e.issues[0].message);
+            }
+        }
+    }, [editableFields.name, editableFields.description]);
+
+    const handleDeleteClick = () => {
+        if (confirming) {
+            api.delete(ENDPOINTS.ISSUE_WITH_ID(props.issue.id, project.id))
+                .then(() => {
+                    setProject((prev) => ({
+                        ...prev,
+                        issues: prev.issues.filter((i) => {
+                            if (i.id != props.issue.id) {
+                                return i;
+                            }
+                        }),
+                    }));
+                    props.onOpenChange(false);
+                    toast({
+                        title: "Success",
+                        description: "Successfully deleted issue!",
+                    });
+                })
+                .catch((e) => {
+                    toast({
+                        title: "Error while deleting issue",
+                        description: e.message,
+                        variant: "destructive",
+                    });
+                });
+            setConfirming(false);
+        } else {
+            setConfirming(true);
+        }
+    };
+
     const handleEditing = (field: string) => {
-        setEditing({ ...isEditing, [field]: true });
+        if (!fieldError) {
+            setEditing({ ...isEditing, [field]: true });
+        }
     };
 
     const handleSave = (field: string) => {
+        if (fieldError) {
+            return;
+        }
         setEditing({ ...isEditing, [field]: false });
         const issueField = field as keyof EditableFields;
         const request = [
@@ -60,13 +115,29 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                 value: editableFields[issueField],
             },
         ];
-        api.patch(ENDPOINTS.ISSUES_WITH_ID(props.issue.id), request)
+        const updateIssue = <K extends keyof PartialIssue>(
+            id: number,
+            field: K,
+            value: PartialIssue[K],
+        ) => {
+            setProject((prev) => ({
+                ...prev,
+                issues: prev.issues.map((issue) => {
+                    if (issue.id === id) {
+                        issue[field] = value;
+                    }
+                    return issue;
+                }),
+            }));
+        };
+
+        api.patch(ENDPOINTS.ISSUE_WITH_ID(props.issue.id, project.id), request)
             .then((res) => {
-                const updatesIssue = res.data as Issue;
-                updateTableRow(
+                const updatedIssue = res.data as Issue;
+                updateIssue(
                     props.issue.id,
                     issueField as keyof PartialIssue,
-                    updatesIssue[issueField],
+                    updatedIssue[issueField],
                 );
             })
             .catch((error) => {
@@ -90,23 +161,35 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                 <SheetContent>
                     <SheetHeader>
                         <SheetTitle>Issue {props.issue.id}</SheetTitle>
+                        <SheetDescription>
+                            A more detailed view of your issue.
+                        </SheetDescription>
                     </SheetHeader>
                     <div className={"mt-10"}>
                         <div className={"sheet-field-cnt"}>
                             <Label className={"pl-1"}>Name</Label>
                             {isEditing["name"] ? (
-                                <Input
-                                    value={editableFields.name}
-                                    onBlur={() => handleSave("name")}
-                                    onKeyDown={(e) => handleKeyPress(e, "name")}
-                                    onChange={(e) =>
-                                        setEditableFields({
-                                            ...editableFields,
-                                            name: e.target.value,
-                                        })
-                                    }
-                                    autoFocus
-                                />
+                                <>
+                                    <Input
+                                        value={editableFields.name}
+                                        onBlur={() => handleSave("name")}
+                                        onKeyDown={(e) =>
+                                            handleKeyPress(e, "name")
+                                        }
+                                        onChange={(e) =>
+                                            setEditableFields({
+                                                ...editableFields,
+                                                name: e.target.value,
+                                            })
+                                        }
+                                        autoFocus
+                                    />
+                                    {fieldError && (
+                                        <span className="text-sm font-medium text-destructive">
+                                            {fieldError}
+                                        </span>
+                                    )}
+                                </>
                             ) : (
                                 <Button
                                     variant={"ghost"}
@@ -120,21 +203,28 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                         <div className={"sheet-field-cnt mt-10"}>
                             <Label className={"pl-1"}>Description</Label>
                             {isEditing["description"] ? (
-                                <Textarea
-                                    ref={textareaRef}
-                                    value={editableFields.description}
-                                    onBlur={() => handleSave("description")}
-                                    onKeyDown={(e) =>
-                                        handleKeyPress(e, "description")
-                                    }
-                                    onChange={(e) =>
-                                        setEditableFields({
-                                            ...editableFields,
-                                            description: e.target.value,
-                                        })
-                                    }
-                                    autoFocus
-                                />
+                                <>
+                                    <Textarea
+                                        ref={textareaRef}
+                                        value={editableFields.description}
+                                        onBlur={() => handleSave("description")}
+                                        onKeyDown={(e) =>
+                                            handleKeyPress(e, "description")
+                                        }
+                                        onChange={(e) =>
+                                            setEditableFields({
+                                                ...editableFields,
+                                                description: e.target.value,
+                                            })
+                                        }
+                                        autoFocus
+                                    />
+                                    {fieldError && (
+                                        <span className="text-sm font-medium text-destructive">
+                                            {fieldError}
+                                        </span>
+                                    )}
+                                </>
                             ) : (
                                 <Button
                                     variant={"ghost"}
@@ -159,9 +249,26 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                             <Label className={"pl-1"}>Type</Label>
                             <IssueTypeSelect
                                 issueId={props.issue.id}
-                                silent={true}
+                                currentType={props.issue.type}
+                                compact={false}
                             />
                         </div>
+                        <div className="sheet-field-cnt mt-10">
+                            <Label>Status</Label>
+                            <IssueLaneSelect
+                                issueId={props.issue.id}
+                                currentLane={props.issue.lane}
+                            />
+                        </div>
+                    </div>
+                    <div className="absolute bottom-8 right-8">
+                        <Button
+                            onClick={handleDeleteClick}
+                            onBlur={() => setConfirming(false)}
+                            variant="destructive"
+                        >
+                            {!confirming ? "Delete" : "Are you sure?"}
+                        </Button>
                     </div>
                 </SheetContent>
             )}
