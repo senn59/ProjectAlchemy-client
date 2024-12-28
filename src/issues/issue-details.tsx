@@ -16,6 +16,7 @@ import { ENDPOINTS } from "@/endpoints";
 import api from "@/api.ts";
 import { toast } from "@/hooks/use-toast.ts";
 import { ProjectContext } from "@/projects/context.ts";
+import { IssueLaneSelect } from "@/issues/issue-lane-select.tsx";
 
 interface IssueTypeSelectProps {
     issue: Issue;
@@ -217,6 +218,13 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                                 issueId={props.issue.id}
                                 currentType={props.issue.type}
                                 compact={false}
+                            />
+                        </div>
+                        <div className="sheet-field-cnt mt-10">
+                            <Label>Status</Label>
+                            <IssueLaneSelect
+                                issueId={props.issue.id}
+                                currentLane={props.issue.lane}
                             />
                         </div>
                     </div>

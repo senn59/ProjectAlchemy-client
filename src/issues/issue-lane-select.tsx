@@ -19,14 +19,23 @@ interface IssueLaneSelectProps {
 }
 
 export function IssueLaneSelect(props: IssueLaneSelectProps) {
-    const { project } = useContext(ProjectContext);
+    const { project, setProject } = useContext(ProjectContext);
     const [lane, setLane] = useState<Lane>(props.currentLane);
 
     const onChange = (value: string) => {
-        const lane = project.lanes.find((l) => l.id.toString() === value);
-        if (!lane) return;
-        setLane(lane);
-        updateLane(lane);
+        const newLane = project.lanes.find((l) => l.id.toString() === value);
+        if (!newLane) return;
+        setLane(newLane);
+        updateLane(newLane);
+        setProject((prev) => ({
+            ...prev,
+            issues: prev.issues.map((issue) => {
+                if (issue.id === props.issueId) {
+                    issue.lane = newLane;
+                }
+                return issue;
+            }),
+        }));
     };
     const updateLane = (newLane: Lane) => {
         const request = [
@@ -40,7 +49,7 @@ export function IssueLaneSelect(props: IssueLaneSelectProps) {
             .then(() => {
                 toast({
                     title: "Success",
-                    description: `Issue lane is now set to ${lane.name}`,
+                    description: `Issue lane is now set to ${newLane.name}`,
                 });
             })
             .catch((e) => {
@@ -60,7 +69,7 @@ export function IssueLaneSelect(props: IssueLaneSelectProps) {
             <SelectContent>
                 <SelectGroup>
                     {project.lanes.map((lane) => (
-                        <SelectItem value={lane.id.toString()}>
+                        <SelectItem value={lane.id.toString()} key={lane.id}>
                             {lane.name}
                         </SelectItem>
                     ))}
