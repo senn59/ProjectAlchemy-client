@@ -49,7 +49,7 @@ export function IssueLaneSelect(props: IssueLaneSelectProps) {
             .then(() => {
                 toast({
                     title: "Success",
-                    description: `Issue lane is now set to ${newLane.name}`,
+                    description: `Issue status is now set to ${newLane.name}`,
                 });
             })
             .catch((e) => {
