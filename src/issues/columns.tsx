@@ -1,7 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { PartialIssue } from "@/issues/types.ts";
 import IssueTypeSelect from "@/issues/issue-type-select.tsx";
-import { Lane } from "@/projects/types.ts";
+import { IssueLaneSelect } from "@/issues/issue-lane-select.tsx";
 
 export const columns: ColumnDef<PartialIssue>[] = [
     {
@@ -33,7 +33,12 @@ export const columns: ColumnDef<PartialIssue>[] = [
     {
         accessorKey: "lane",
         header: "Status",
-        size: 100,
-        cell: ({ row }) => <div>{row.getValue<Lane>("lane").name}</div>,
+        size: 150,
+        cell: ({ row }) => (
+            <IssueLaneSelect
+                issueId={row.getValue("id")}
+                currentLane={row.getValue("lane")}
+            />
+        ),
     },
 ];

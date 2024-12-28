@@ -1,6 +1,7 @@
 import {
     Select,
     SelectContent,
+    SelectGroup,
     SelectItem,
     SelectTrigger,
     SelectValue,
@@ -28,7 +29,7 @@ export default function IssueTypeSelect(props: IssueTypeSelectProps) {
     const [type, setType] = useState<IssueType>(props.currentType);
     const { toast } = useToast();
 
-    const onIssueTypeChange = (value: string) => {
+    const onChange = (value: string) => {
         const issueTypeKey = value as keyof typeof IssueType;
         const newIssueType = IssueType[issueTypeKey];
         updateIssueType(newIssueType);
@@ -81,7 +82,7 @@ export default function IssueTypeSelect(props: IssueTypeSelectProps) {
     };
 
     return (
-        <Select onValueChange={onIssueTypeChange} value={type.toString()}>
+        <Select onValueChange={onChange} value={type.toString()}>
             <SelectTrigger>
                 <SelectValue>
                     {props.compact ? (
@@ -95,18 +96,20 @@ export default function IssueTypeSelect(props: IssueTypeSelectProps) {
                 </SelectValue>
             </SelectTrigger>
             <SelectContent>
-                {Object.keys(IssueType)
-                    .filter((key) => isNaN(Number(key)))
-                    .map((type, index) => {
-                        return (
-                            <SelectItem value={type} key={index}>
-                                <div className="flex">
-                                    {getIcon(type as IssueType)}
-                                    <div className="pl-3">{type}</div>
-                                </div>
-                            </SelectItem>
-                        );
-                    })}
+                <SelectGroup>
+                    {Object.keys(IssueType)
+                        .filter((key) => isNaN(Number(key)))
+                        .map((type, index) => {
+                            return (
+                                <SelectItem value={type} key={index}>
+                                    <div className="flex">
+                                        {getIcon(type as IssueType)}
+                                        <div className="pl-3">{type}</div>
+                                    </div>
+                                </SelectItem>
+                            );
+                        })}
+                </SelectGroup>
             </SelectContent>
         </Select>
     );
