@@ -53,11 +53,15 @@ function Projects() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {loading ? (
+                        {loading || projects.length < 1 ? (
                             <TableRow>
                                 <TableCell colSpan={3}>
                                     <div className="flex justify-center mt-24">
-                                        <Loader />
+                                        {loading ? (
+                                            <Loader />
+                                        ) : (
+                                            <div>No projects found</div>
+                                        )}
                                     </div>
                                 </TableCell>
                             </TableRow>
