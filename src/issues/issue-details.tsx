@@ -17,6 +17,7 @@ import api from "@/api.ts";
 import { toast } from "@/hooks/use-toast.ts";
 import { ProjectContext } from "@/projects/context.ts";
 import { IssueLaneSelect } from "@/issues/issue-lane-select.tsx";
+import { z } from "zod";
 
 interface IssueTypeSelectProps {
     issue: Issue;
@@ -28,23 +29,41 @@ interface EditableFields {
     name: string;
     description: string;
 }
-
 export default function IssueDetails(props: IssueTypeSelectProps) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
-
     const [editableFields, setEditableFields] = useState<EditableFields>({
         name: props.issue.name,
         description: props.issue.description,
     });
-
+    const [fieldError, setFieldError] = useState<string>("");
     const [isEditing, setEditing] = useState<Record<string, boolean>>({
         name: false,
         description: false,
     });
-
     const { project, setProject } = useContext(ProjectContext);
-
     const [confirming, setConfirming] = useState<boolean>(false);
+
+    const nameFormSchema = z.string().min(1).max(30);
+    const descriptionFormSchema = z.string().max(200);
+
+    useEffect(() => {
+        if (isEditing["description"] && textareaRef.current) {
+            const length = textareaRef.current.value.length;
+            textareaRef.current.setSelectionRange(length, length);
+        }
+    }, [isEditing]);
+
+    useEffect(() => {
+        try {
+            nameFormSchema.parse(editableFields.name);
+            descriptionFormSchema.parse(editableFields.description);
+            setFieldError("");
+        } catch (e) {
+            if (e instanceof z.ZodError) {
+                setFieldError(e.issues[0].message);
+            }
+        }
+    }, [editableFields.name, editableFields.description]);
 
     const handleDeleteClick = () => {
         if (confirming) {
@@ -61,7 +80,7 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                     props.onOpenChange(false);
                     toast({
                         title: "Success",
-                        description: "Succesfully deleted issue!",
+                        description: "Successfully deleted issue!",
                     });
                 })
                 .catch((e) => {
@@ -77,18 +96,16 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
         }
     };
 
-    useEffect(() => {
-        if (isEditing["description"] && textareaRef.current) {
-            const length = textareaRef.current.value.length;
-            textareaRef.current.setSelectionRange(length, length);
-        }
-    }, [isEditing]);
-
     const handleEditing = (field: string) => {
-        setEditing({ ...isEditing, [field]: true });
+        if (!fieldError) {
+            setEditing({ ...isEditing, [field]: true });
+        }
     };
 
     const handleSave = (field: string) => {
+        if (fieldError) {
+            return;
+        }
         setEditing({ ...isEditing, [field]: false });
         const issueField = field as keyof EditableFields;
         const request = [
@@ -152,18 +169,27 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                         <div className={"sheet-field-cnt"}>
                             <Label className={"pl-1"}>Name</Label>
                             {isEditing["name"] ? (
-                                <Input
-                                    value={editableFields.name}
-                                    onBlur={() => handleSave("name")}
-                                    onKeyDown={(e) => handleKeyPress(e, "name")}
-                                    onChange={(e) =>
-                                        setEditableFields({
-                                            ...editableFields,
-                                            name: e.target.value,
-                                        })
-                                    }
-                                    autoFocus
-                                />
+                                <>
+                                    <Input
+                                        value={editableFields.name}
+                                        onBlur={() => handleSave("name")}
+                                        onKeyDown={(e) =>
+                                            handleKeyPress(e, "name")
+                                        }
+                                        onChange={(e) =>
+                                            setEditableFields({
+                                                ...editableFields,
+                                                name: e.target.value,
+                                            })
+                                        }
+                                        autoFocus
+                                    />
+                                    {fieldError && (
+                                        <span className="text-sm font-medium text-destructive">
+                                            {fieldError}
+                                        </span>
+                                    )}
+                                </>
                             ) : (
                                 <Button
                                     variant={"ghost"}
@@ -177,21 +203,28 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                         <div className={"sheet-field-cnt mt-10"}>
                             <Label className={"pl-1"}>Description</Label>
                             {isEditing["description"] ? (
-                                <Textarea
-                                    ref={textareaRef}
-                                    value={editableFields.description}
-                                    onBlur={() => handleSave("description")}
-                                    onKeyDown={(e) =>
-                                        handleKeyPress(e, "description")
-                                    }
-                                    onChange={(e) =>
-                                        setEditableFields({
-                                            ...editableFields,
-                                            description: e.target.value,
-                                        })
-                                    }
-                                    autoFocus
-                                />
+                                <>
+                                    <Textarea
+                                        ref={textareaRef}
+                                        value={editableFields.description}
+                                        onBlur={() => handleSave("description")}
+                                        onKeyDown={(e) =>
+                                            handleKeyPress(e, "description")
+                                        }
+                                        onChange={(e) =>
+                                            setEditableFields({
+                                                ...editableFields,
+                                                description: e.target.value,
+                                            })
+                                        }
+                                        autoFocus
+                                    />
+                                    {fieldError && (
+                                        <span className="text-sm font-medium text-destructive">
+                                            {fieldError}
+                                        </span>
+                                    )}
+                                </>
                             ) : (
                                 <Button
                                     variant={"ghost"}
