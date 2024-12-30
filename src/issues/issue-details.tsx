@@ -67,12 +67,12 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
 
     const handleDeleteClick = () => {
         if (confirming) {
-            api.delete(ENDPOINTS.ISSUE_WITH_ID(props.issue.id, project.id))
+            api.delete(ENDPOINTS.ISSUE_WITH_ID(props.issue.key, project.id))
                 .then(() => {
                     setProject((prev) => ({
                         ...prev,
                         issues: prev.issues.filter((i) => {
-                            if (i.id != props.issue.id) {
+                            if (i.key != props.issue.key) {
                                 return i;
                             }
                         }),
@@ -123,7 +123,7 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
             setProject((prev) => ({
                 ...prev,
                 issues: prev.issues.map((issue) => {
-                    if (issue.id === id) {
+                    if (issue.key === id) {
                         issue[field] = value;
                     }
                     return issue;
@@ -131,11 +131,11 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
             }));
         };
 
-        api.patch(ENDPOINTS.ISSUE_WITH_ID(props.issue.id, project.id), request)
+        api.patch(ENDPOINTS.ISSUE_WITH_ID(props.issue.key, project.id), request)
             .then((res) => {
                 const updatedIssue = res.data as Issue;
                 updateIssue(
-                    props.issue.id,
+                    props.issue.key,
                     issueField as keyof PartialIssue,
                     updatedIssue[issueField],
                 );
@@ -160,7 +160,7 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
             {props.issue !== null && (
                 <SheetContent>
                     <SheetHeader>
-                        <SheetTitle>Issue {props.issue.id}</SheetTitle>
+                        <SheetTitle>Issue {props.issue.key}</SheetTitle>
                         <SheetDescription>
                             A more detailed view of your issue.
                         </SheetDescription>
@@ -248,7 +248,7 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                         <div className={"sheet-field-cnt mt-10"}>
                             <Label className={"pl-1"}>Type</Label>
                             <IssueTypeSelect
-                                issueId={props.issue.id}
+                                issueKey={props.issue.key}
                                 currentType={props.issue.type}
                                 compact={false}
                             />
@@ -256,7 +256,7 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                         <div className="sheet-field-cnt mt-10">
                             <Label>Status</Label>
                             <IssueLaneSelect
-                                issueId={props.issue.id}
+                                issueKey={props.issue.key}
                                 currentLane={props.issue.lane}
                             />
                         </div>

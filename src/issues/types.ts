@@ -1,7 +1,7 @@
 import { Lane } from "@/projects/types.ts";
 
 export interface PartialIssue {
-    id: number;
+    key: number;
     name: string;
     type: IssueType;
     lane: Lane;

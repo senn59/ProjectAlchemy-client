@@ -6,8 +6,8 @@ import { Lane } from "@/projects/types.ts";
 
 export const columns: ColumnDef<PartialIssue>[] = [
     {
-        accessorKey: "id",
-        header: "Id",
+        accessorKey: "key",
+        header: "Key",
         size: 5,
     },
     {
@@ -16,7 +16,7 @@ export const columns: ColumnDef<PartialIssue>[] = [
         size: 5,
         cell: ({ row }) => (
             <IssueTypeSelect
-                issueId={row.getValue("id")}
+                issueKey={row.getValue("key")}
                 currentType={row.getValue("type")}
                 compact={true}
                 key={row.getValue("type")}
@@ -35,7 +35,7 @@ export const columns: ColumnDef<PartialIssue>[] = [
         size: 150,
         cell: ({ row }) => (
             <IssueLaneSelect
-                issueId={row.getValue("id")}
+                issueKey={row.getValue("key")}
                 currentLane={row.getValue("lane")}
                 key={row.getValue<Lane>("lane").id}
             />

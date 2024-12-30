@@ -14,7 +14,7 @@ import { ENDPOINTS } from "@/endpoints.ts";
 import { toast } from "@/hooks/use-toast.ts";
 
 interface IssueLaneSelectProps {
-    issueId: number;
+    issueKey: number;
     currentLane: Lane;
 }
 
@@ -30,7 +30,7 @@ export function IssueLaneSelect(props: IssueLaneSelectProps) {
         setProject((prev) => ({
             ...prev,
             issues: prev.issues.map((issue) => {
-                if (issue.id === props.issueId) {
+                if (issue.key === props.issueKey) {
                     issue.lane = newLane;
                 }
                 return issue;
@@ -45,7 +45,7 @@ export function IssueLaneSelect(props: IssueLaneSelectProps) {
                 value: newLane,
             },
         ];
-        api.patch(ENDPOINTS.ISSUE_WITH_ID(props.issueId, project.id), request)
+        api.patch(ENDPOINTS.ISSUE_WITH_ID(props.issueKey, project.id), request)
             .then(() => {
                 toast({
                     title: "Success",
