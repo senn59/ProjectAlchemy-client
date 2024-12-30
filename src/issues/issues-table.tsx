@@ -83,7 +83,7 @@ export function IssuesTable() {
         if (!row.getIsSelected()) {
             setIsOpenSheet(true);
             const rowData = row.original as PartialIssue;
-            setSelectedRow((await getIssueData(rowData.id)) ?? null);
+            setSelectedRow((await getIssueData(rowData.key)) ?? null);
         }
     };
 

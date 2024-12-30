@@ -19,6 +19,6 @@ export interface ProjectResponse {
 }
 
 export interface Lane {
-    id: number;
+    id: string;
     name: string;
 }

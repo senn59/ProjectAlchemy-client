@@ -47,7 +47,7 @@ function Projects() {
                 <Table className="mt-4">
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-[100px]">Name</TableHead>
+                            <TableHead>Name</TableHead>
                             <TableHead className="text-right">Member</TableHead>
                             <TableHead className="text-right">Action</TableHead>
                         </TableRow>

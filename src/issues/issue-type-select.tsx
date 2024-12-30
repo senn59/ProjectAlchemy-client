@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 
 interface IssueTypeSelectProps {
-    issueId: number;
+    issueKey: number;
     currentType: IssueType;
     compact: boolean;
 }
@@ -36,7 +36,7 @@ export default function IssueTypeSelect(props: IssueTypeSelectProps) {
         setProject((prev) => ({
             ...prev,
             issues: prev.issues.map((issue) => {
-                if (issue.id === props.issueId) {
+                if (issue.key === props.issueKey) {
                     issue.type = newIssueType;
                 }
                 return issue;
@@ -53,11 +53,11 @@ export default function IssueTypeSelect(props: IssueTypeSelectProps) {
                 value: type,
             },
         ];
-        api.patch(ENDPOINTS.ISSUE_WITH_ID(props.issueId, project!.id), request)
+        api.patch(ENDPOINTS.ISSUE_WITH_ID(props.issueKey, project!.id), request)
             .then(() => {
                 toast({
                     title: "Success",
-                    description: `Type of issue ${props.issueId} has changed.`,
+                    description: `Type of issue ${props.issueKey} has changed.`,
                 });
             })
             .catch((error) => {
