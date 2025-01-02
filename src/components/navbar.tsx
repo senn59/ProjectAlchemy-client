@@ -3,6 +3,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/shadcn/theme-toggle";
 import { useAuth } from "@/auth/authprovider.tsx";
+import { Notifications } from "@/components/notifications.tsx";
 
 function Navbar() {
     const { logout } = useAuth();
@@ -22,7 +23,10 @@ function Navbar() {
                         <Button variant={"ghost"}>Projects</Button>
                     </Link>
                 </div>
-                <div className="pr-5 flex">
+                <div className="pr-5 flex items-center">
+                    <div className="mr-4">
+                        <Notifications />
+                    </div>
                     <div className="mr-4">
                         <ModeToggle />
                     </div>
