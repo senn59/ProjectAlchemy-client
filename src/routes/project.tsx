@@ -7,6 +7,7 @@ import { ENDPOINTS } from "@/endpoints.ts";
 import { ProjectContext } from "@/projects/context.ts";
 import { toast } from "@/hooks/use-toast.ts";
 import { Loader } from "@/components/Loader.tsx";
+import { ProjectSettings } from "@/projects/project-settings.tsx";
 
 export default function Project() {
     const { id } = useParams();
@@ -35,13 +36,16 @@ export default function Project() {
 
     return !loading ? (
         <ProjectContext.Provider value={{ project, setProject }}>
-            <div className="flex grow justify-center">
-                <div className="w-2/3 mt-12">
+            <div className="flex grow justify-center relative">
+                <div className="w-2/3 mt-28">
                     {Object.keys(project).length > 0 && (
                         <>
-                            <h1 className="text-3xl font-extrabold">
-                                {project.name}
-                            </h1>
+                            <div className="flex justify-between items-end">
+                                <h1 className="text-3xl font-extrabold">
+                                    {project.name}
+                                </h1>
+                                <ProjectSettings />
+                            </div>
                             <div className="my-12">
                                 <IssuesTable />
                             </div>
