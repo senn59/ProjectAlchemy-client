@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import api from "@/api.ts";
 import { ProjectResponse } from "@/projects/types.ts";
@@ -7,7 +7,8 @@ import { ENDPOINTS } from "@/endpoints.ts";
 import { ProjectContext } from "@/projects/context.ts";
 import { toast } from "@/hooks/use-toast.ts";
 import { Loader } from "@/components/Loader.tsx";
-import { ProjectSettings } from "@/projects/project-settings.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import { LucideSettings } from "lucide-react";
 
 export default function Project() {
     const { id } = useParams();
@@ -44,7 +45,11 @@ export default function Project() {
                                 <h1 className="text-3xl font-extrabold">
                                     {project.name}
                                 </h1>
-                                <ProjectSettings />
+                                <Link to={`/projects/${id}/settings`}>
+                                    <Button size="icon" variant="ghost">
+                                        <LucideSettings size={20} />
+                                    </Button>
+                                </Link>
                             </div>
                             <div className="my-12">
                                 <IssuesTable />

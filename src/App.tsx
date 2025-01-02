@@ -9,6 +9,7 @@ import Signup from "@/routes/signup.tsx";
 import { Toaster } from "@/components/ui/toaster.tsx";
 import Projects from "@/routes/projects.tsx";
 import Project from "@/routes/project.tsx";
+import { ProjectSettings } from "@/projects/project-settings.tsx";
 
 function App() {
     return (
@@ -28,6 +29,10 @@ function App() {
                                 <Route
                                     path="projects/:id"
                                     element={<Project />}
+                                />
+                                <Route
+                                    path="projects/:id/settings"
+                                    element={<ProjectSettings />}
                                 />
                             </Route>
                         </Route>
