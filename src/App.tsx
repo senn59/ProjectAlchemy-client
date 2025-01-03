@@ -10,6 +10,7 @@ import { Toaster } from "@/components/ui/toaster.tsx";
 import Projects from "@/routes/projects.tsx";
 import Project from "@/routes/project.tsx";
 import { ProjectSettings } from "@/projects/project-settings.tsx";
+import { ProjectProvider } from "@/projects/project-provider.tsx";
 
 function App() {
     return (
@@ -28,12 +29,14 @@ function App() {
                                 <Route path="projects" element={<Projects />} />
                                 <Route
                                     path="projects/:id"
-                                    element={<Project />}
-                                />
-                                <Route
-                                    path="projects/:id/settings"
-                                    element={<ProjectSettings />}
-                                />
+                                    element={<ProjectProvider />}
+                                >
+                                    <Route index element={<Project />} />
+                                    <Route
+                                        path="settings"
+                                        element={<ProjectSettings />}
+                                    />
+                                </Route>
                             </Route>
                         </Route>
                     </Routes>

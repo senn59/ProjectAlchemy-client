@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button.tsx";
 import {
     Table,
     TableBody,
+    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
@@ -20,8 +21,28 @@ import {
 } from "@/components/ui/form.tsx";
 import { Label } from "@/components/ui/label.tsx";
 import { Input } from "@/components/ui/input.tsx";
+import { useContext, useEffect, useState } from "react";
+import { ProjectContext } from "@/projects/project-provider.tsx";
+import { InvitationSentView } from "@/projects/types.ts";
+import api from "@/api.ts";
+import { ENDPOINTS } from "@/endpoints.ts";
+import { toast } from "@/hooks/use-toast.ts";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export function ProjectSettings() {
+    const [invitations, setInvitations] = useState<InvitationSentView[]>([]);
+
+    const { project } = useContext(ProjectContext);
     const formSchema = z.object({
         email: z.string().email(),
     });
@@ -34,13 +55,71 @@ export function ProjectSettings() {
     });
 
     const onSubmit = (values: z.infer<typeof formSchema>) => {
-        console.log(values.email);
+        api.post(ENDPOINTS.PROJECT_INVITATIONS(project.id), {
+            email: values.email,
+        })
+            .then((r) => {
+                toast({
+                    title: "Success",
+                    description: `Invite sent to ${values.email}`,
+                });
+                setInvitations((prev) => [...prev, r.data]);
+            })
+            .catch((e) => {
+                console.log(e);
+                let description = e.message;
+                if (e.status == 422) {
+                    description = "Invitation for that email already exists";
+                }
+                toast({
+                    variant: "destructive",
+                    title: "Error sending invitation",
+                    description: description,
+                });
+            });
     };
+
+    const deleteInvitation = (id: string) => {
+        api.delete(ENDPOINTS.PROJECT_INVITATIONS(project.id) + `/${id}`)
+            .then(() => {
+                toast({
+                    title: "Success",
+                    description: "Deleted invitation",
+                });
+                setInvitations((prev) =>
+                    prev.filter((i) => i.invitationId !== id),
+                );
+            })
+            .catch((e) => {
+                toast({
+                    variant: "destructive",
+                    title: "Error while trying to delete invitation",
+                    description: e.message,
+                });
+            });
+    };
+
+    useEffect(() => {
+        api.get(ENDPOINTS.PROJECT_INVITATIONS(project.id))
+            .then((r) => {
+                setInvitations(r.data);
+                console.log(r.data);
+            })
+            .catch((e) =>
+                toast({
+                    variant: "destructive",
+                    title: `Error fetching invitations`,
+                    description: e.message,
+                }),
+            );
+    }, []);
 
     return (
         <div className="flex justify-center w-full">
-            <div className="w-2/3 mt-16">
-                <div className="text-sm text-muted-foreground">ProjectName</div>
+            <div className="w-2/3 my-16">
+                <div className="text-sm text-muted-foreground">
+                    Project: {project.name}
+                </div>
                 <h1 className="text-2xl font-extrabold mt-4">
                     Project Settings
                 </h1>
@@ -48,7 +127,7 @@ export function ProjectSettings() {
                 <div className="mt-10">
                     <div>
                         <div className="mb-4 text-lg font-bold">
-                            Members (1)
+                            Members ({project.members.length})
                         </div>
                         <Table className="m-0 p-0">
                             <TableHeader>
@@ -58,14 +137,12 @@ export function ProjectSettings() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                <TableRow>
-                                    <TableCell>testuser</TableCell>
-                                    <TableCell>Owner</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>testuser</TableCell>
-                                    <TableCell>Invited</TableCell>
-                                </TableRow>
+                                {project.members.map((member) => (
+                                    <TableRow key={member.userId}>
+                                        <TableCell>{member.userId}</TableCell>
+                                        <TableCell>{member.type}</TableCell>
+                                    </TableRow>
+                                ))}
                             </TableBody>
                         </Table>
                     </div>
@@ -83,7 +160,7 @@ export function ProjectSettings() {
                                             <FormItem>
                                                 <FormLabel>
                                                     <Label htmlFor="name">
-                                                        Email Adress
+                                                        Email Address
                                                     </Label>
                                                 </FormLabel>
                                                 <div className="flex items-end">
@@ -106,7 +183,7 @@ export function ProjectSettings() {
                         </Form>
                     </div>
                     <div className="mb-4 mt-10 text-lg font-bold">
-                        Outgoing Invites (1)
+                        Outgoing Invites ({invitations.length})
                     </div>
                     <Table className="m-0 p-0">
                         <TableHeader>
@@ -116,14 +193,57 @@ export function ProjectSettings() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            <TableRow>
-                                <TableCell>email@email.com</TableCell>
-                                <TableCell>
-                                    <Button variant="destructive" size="sm">
-                                        Cancel
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
+                            {invitations.length < 1 ? (
+                                <TableCaption className="w-full">
+                                    No outgoing invitations
+                                </TableCaption>
+                            ) : (
+                                invitations.map((i) => (
+                                    <TableRow key={i.invitationId}>
+                                        <TableCell>{i.email}</TableCell>
+                                        <TableCell>
+                                            <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <Button
+                                                        variant="destructive"
+                                                        size="sm"
+                                                    >
+                                                        Cancel
+                                                    </Button>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>
+                                                            Are you absolutely
+                                                            sure?
+                                                        </AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            This action cannot
+                                                            be undone. This will
+                                                            revoke the invite
+                                                            sent to {i.email}
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel>
+                                                            Cancel
+                                                        </AlertDialogCancel>
+                                                        <AlertDialogAction
+                                                            onClick={() => {
+                                                                deleteInvitation(
+                                                                    i.invitationId,
+                                                                );
+                                                            }}
+                                                        >
+                                                            Continue
+                                                        </AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            )}
                         </TableBody>
                     </Table>
                 </div>

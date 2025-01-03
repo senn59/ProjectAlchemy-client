@@ -5,4 +5,6 @@ export const ENDPOINTS = {
         `${ENDPOINTS.ISSUES(projectId)}/${issueId}`,
     PROJECTS: "/projects",
     PROJECT_WITH_ID: (id: string) => `${ENDPOINTS.PROJECTS}/${id}`,
+    PROJECT_INVITATIONS: (id: string) =>
+        `${ENDPOINTS.PROJECT_WITH_ID(id)}/invitations`,
 };

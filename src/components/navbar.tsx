@@ -6,7 +6,7 @@ import { useAuth } from "@/auth/authprovider.tsx";
 import { Notifications } from "@/components/notifications.tsx";
 
 function Navbar() {
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
     const navigate = useNavigate();
 
     const signOut = () => {
@@ -24,6 +24,12 @@ function Navbar() {
                     </Link>
                 </div>
                 <div className="pr-5 flex items-center">
+                    <div className="mr-4 text-sm w-max">
+                        <span className="font-bold text-muted-foreground">
+                            Logged in:
+                        </span>{" "}
+                        <span className="">{user?.email}</span>
+                    </div>
                     <div className="mr-4">
                         <Notifications />
                     </div>

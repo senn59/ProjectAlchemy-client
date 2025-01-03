@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import api from "@/api.ts";
 import { toast } from "@/hooks/use-toast.ts";
-import { ProjectContext } from "@/projects/context.ts";
+import { ProjectContext } from "@/projects/project-provider.tsx";
 import { columns } from "@/issues/columns.tsx";
 
 export function IssuesTable() {

@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea.tsx";
 import { ENDPOINTS } from "@/endpoints";
 import api from "@/api.ts";
 import { toast } from "@/hooks/use-toast.ts";
-import { ProjectContext } from "@/projects/context.ts";
+import { ProjectContext } from "@/projects/project-provider.tsx";
 import { IssueLaneSelect } from "@/issues/issue-lane-select.tsx";
 import { z } from "zod";
 

@@ -8,7 +8,7 @@ import {
     SelectGroup,
 } from "@/components/ui/select.tsx";
 import { useContext, useState } from "react";
-import { ProjectContext } from "@/projects/context.ts";
+import { ProjectContext } from "@/projects/project-provider.tsx";
 import api from "@/api.ts";
 import { ENDPOINTS } from "@/endpoints.ts";
 import { toast } from "@/hooks/use-toast.ts";
