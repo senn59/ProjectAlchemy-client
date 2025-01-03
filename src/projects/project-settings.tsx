@@ -23,7 +23,7 @@ import { Label } from "@/components/ui/label.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { useContext, useEffect, useState } from "react";
 import { ProjectContext } from "@/projects/project-provider.tsx";
-import { InvitationSentView } from "@/projects/types.ts";
+import { InvitationSentView, memberType } from "@/projects/types.ts";
 import api from "@/api.ts";
 import { ENDPOINTS } from "@/endpoints.ts";
 import { toast } from "@/hooks/use-toast.ts";
@@ -38,11 +38,24 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useAuth } from "@/auth/authprovider.tsx";
+import { useNavigate } from "react-router-dom";
 
 export function ProjectSettings() {
     const [invitations, setInvitations] = useState<InvitationSentView[]>([]);
-
+    const { user } = useAuth();
     const { project } = useContext(ProjectContext);
+    const navigator = useNavigate();
+
+    useEffect(() => {
+        if (
+            project.members.find((m) => m.userId == user?.id)?.type !=
+            memberType.Owner
+        ) {
+            navigator("/projects/" + project.id);
+        }
+    }, []);
+
     const formSchema = z.object({
         email: z.string().email(),
     });

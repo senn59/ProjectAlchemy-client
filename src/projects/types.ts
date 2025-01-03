@@ -33,3 +33,7 @@ export interface InvitationSentView {
     invitationId: string;
     email: string;
 }
+export interface Invitation {
+    invitationId: string;
+    projectName: string;
+}

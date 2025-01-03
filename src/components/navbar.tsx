@@ -3,7 +3,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/shadcn/theme-toggle";
 import { useAuth } from "@/auth/authprovider.tsx";
-import { Notifications } from "@/components/notifications.tsx";
+import { Invitations } from "@/components/invitations.tsx";
 
 function Navbar() {
     const { logout, user } = useAuth();
@@ -31,7 +31,7 @@ function Navbar() {
                         <span className="">{user?.email}</span>
                     </div>
                     <div className="mr-4">
-                        <Notifications />
+                        <Invitations />
                     </div>
                     <div className="mr-4">
                         <ModeToggle />
