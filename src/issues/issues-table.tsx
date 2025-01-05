@@ -50,7 +50,9 @@ export function IssuesTable() {
             laneId: project.lanes[0].id,
         })
             .then((res) => {
+                console.log(res);
                 const newIssue = res.data as PartialIssue;
+                console.log(newIssue);
                 setProject((prev) => ({
                     ...prev,
                     issues: [...(prev.issues || []), newIssue],

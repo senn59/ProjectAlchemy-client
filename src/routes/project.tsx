@@ -1,16 +1,53 @@
 import { Link, useParams } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { IssuesTable } from "@/issues/issues-table.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { LucideSettings } from "lucide-react";
 import { ProjectContext } from "@/projects/project-provider.tsx";
 import { useAuth } from "@/auth/authprovider.tsx";
 import { memberType } from "@/projects/types.ts";
+import * as signalR from "@microsoft/signalr";
 
 export default function Project() {
-    const { project } = useContext(ProjectContext);
-    const { user } = useAuth();
+    const { project, setProject } = useContext(ProjectContext);
+    const { user, jwt } = useAuth();
     const { id } = useParams();
+    const [connection, setConnection] = useState<signalR.HubConnection>();
+
+    useEffect(() => {
+        const newConnection = new signalR.HubConnectionBuilder()
+            .withUrl(
+                `http://localhost:5297/projectHub?projectId=${project.id}`,
+                {
+                    accessTokenFactory: () => jwt ?? "",
+                    skipNegotiation: true,
+                    transport: signalR.HttpTransportType.WebSockets,
+                },
+            )
+            .withAutomaticReconnect()
+            .build();
+        setConnection(newConnection);
+    }, [jwt]);
+
+    useEffect(() => {
+        if (connection) {
+            connection.start().then(() => {
+                connection.on("IssueNew", (issue) => {
+                    if (!project.issues.find((i) => i.key == issue.key)) {
+                        setProject((prevState) => ({
+                            ...prevState,
+                            issues: [...project.issues, issue],
+                        }));
+                    }
+                    console.log(issue);
+                });
+                connection.on("IssueUpdate", (message) => {
+                    console.log(message);
+                });
+            });
+        }
+    }, [connection]);
+
     return (
         <div className="flex grow justify-center relative">
             <div className="w-2/3 mt-28">
