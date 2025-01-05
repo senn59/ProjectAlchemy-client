@@ -7,7 +7,7 @@ import {
     SelectItem,
     SelectGroup,
 } from "@/components/ui/select.tsx";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ProjectContext } from "@/projects/project-provider.tsx";
 import api from "@/api.ts";
 import { ENDPOINTS } from "@/endpoints.ts";
@@ -37,6 +37,7 @@ export function IssueLaneSelect(props: IssueLaneSelectProps) {
             }),
         }));
     };
+    useEffect(() => {});
     const updateLane = (newLane: Lane) => {
         const request = [
             {
