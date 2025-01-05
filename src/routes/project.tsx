@@ -7,6 +7,7 @@ import { ProjectContext } from "@/projects/project-provider.tsx";
 import { useAuth } from "@/auth/authprovider.tsx";
 import { memberType } from "@/projects/types.ts";
 import * as signalR from "@microsoft/signalr";
+import { Issue, PartialIssue } from "@/issues/types.ts";
 
 export default function Project() {
     const { project, setProject } = useContext(ProjectContext);
@@ -32,17 +33,27 @@ export default function Project() {
     useEffect(() => {
         if (connection) {
             connection.start().then(() => {
-                connection.on("IssueNew", (issue) => {
+                connection.on("IssueNew", (issue: PartialIssue) => {
                     if (!project.issues.find((i) => i.key == issue.key)) {
-                        setProject((prevState) => ({
-                            ...prevState,
-                            issues: [...project.issues, issue],
+                        setProject((prev) => ({
+                            ...prev,
+                            issues: [...(prev.issues || []), issue],
                         }));
                     }
-                    console.log(issue);
                 });
-                connection.on("IssueUpdate", (message) => {
-                    console.log(message);
+                connection.on("IssueUpdate", (issue: Issue) => {
+                    setProject((prev) => ({
+                        ...prev,
+                        issues: prev.issues.map((i) => {
+                            if (i.key == issue.key) {
+                                return {
+                                    ...i,
+                                    ...issue,
+                                };
+                            }
+                            return i;
+                        }),
+                    }));
                 });
             });
         }
