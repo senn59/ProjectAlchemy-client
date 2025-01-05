@@ -53,6 +53,11 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                     });
                 }
             });
+            websocket.on("IssueDelete", (key: number) => {
+                if (issue.key === key) {
+                    props.onOpenChange(false);
+                }
+            });
         }
     }, [websocket]);
 

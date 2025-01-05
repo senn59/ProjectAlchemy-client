@@ -1,44 +1,16 @@
 import { Link, useParams } from "react-router-dom";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { IssuesTable } from "@/issues/issues-table.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { LucideSettings } from "lucide-react";
 import { ProjectContext } from "@/projects/project-provider.tsx";
 import { useAuth } from "@/auth/authprovider.tsx";
 import { memberType } from "@/projects/types.ts";
-import { Issue, PartialIssue } from "@/issues/types.ts";
 
 export default function Project() {
-    const { project, setProject, websocket } = useContext(ProjectContext);
+    const { project } = useContext(ProjectContext);
     const { user } = useAuth();
     const { id } = useParams();
-
-    useEffect(() => {
-        if (websocket) {
-            websocket.on("IssueNew", (issue: PartialIssue) => {
-                if (!project.issues.find((i) => i.key == issue.key)) {
-                    setProject((prev) => ({
-                        ...prev,
-                        issues: [...(prev.issues || []), issue],
-                    }));
-                }
-            });
-            websocket.on("IssueUpdate", (issue: Issue) => {
-                setProject((prev) => ({
-                    ...prev,
-                    issues: prev.issues.map((i) => {
-                        if (i.key == issue.key) {
-                            return {
-                                ...i,
-                                ...issue,
-                            };
-                        }
-                        return i;
-                    }),
-                }));
-            });
-        }
-    }, [websocket]);
 
     return (
         <div className="flex grow justify-center relative">

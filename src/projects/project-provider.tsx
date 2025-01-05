@@ -7,6 +7,7 @@ import { toast } from "@/hooks/use-toast.ts";
 import { Loader } from "@/components/Loader.tsx";
 import * as signalR from "@microsoft/signalr";
 import { useAuth } from "@/auth/authprovider.tsx";
+import { Issue, PartialIssue } from "@/issues/types.ts";
 
 interface ProjectContextType {
     project: ProjectResponse;
@@ -63,6 +64,43 @@ export function ProjectProvider() {
             setWebsocket(newConnection);
         });
     }, [jwt, project.id]);
+
+    useEffect(() => {
+        if (websocket) {
+            websocket.on("IssueNew", (issue: PartialIssue) => {
+                if (!project.issues.find((i) => i.key == issue.key)) {
+                    setProject((prev) => ({
+                        ...prev,
+                        issues: [...(prev.issues || []), issue],
+                    }));
+                }
+            });
+            websocket.on("IssueUpdate", (issue: Issue) => {
+                setProject((prev) => ({
+                    ...prev,
+                    issues: prev.issues.map((i) => {
+                        if (i.key == issue.key) {
+                            return {
+                                ...i,
+                                ...issue,
+                            };
+                        }
+                        return i;
+                    }),
+                }));
+            });
+            websocket.on("IssueDelete", (key: number) => {
+                setProject((prev) => ({
+                    ...prev,
+                    issues: prev.issues.filter((i) => {
+                        if (i.key != key) {
+                            return i;
+                        }
+                    }),
+                }));
+            });
+        }
+    }, [websocket]);
 
     return !loading ? (
         <ProjectContext.Provider value={{ project, setProject, websocket }}>
