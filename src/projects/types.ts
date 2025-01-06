@@ -21,6 +21,7 @@ export interface ProjectResponse {
 
 export interface Member {
     userId: string;
+    userName: string;
     type: memberType;
 }
 

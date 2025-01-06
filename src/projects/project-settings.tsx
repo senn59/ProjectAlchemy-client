@@ -152,7 +152,7 @@ export function ProjectSettings() {
                             <TableBody>
                                 {project.members.map((member) => (
                                     <TableRow key={member.userId}>
-                                        <TableCell>{member.userId}</TableCell>
+                                        <TableCell>{member.userName}</TableCell>
                                         <TableCell>{member.type}</TableCell>
                                     </TableRow>
                                 ))}

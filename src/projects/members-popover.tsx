@@ -24,7 +24,7 @@ export function MembersPopover({ members }: MembersPopoverProps) {
             <PopoverContent className="w-max text-sm">
                 {members.map((member) => (
                     <div className="flex justify-between">
-                        <div>{member.userId}</div>
+                        <div>{member.userName}</div>
                         <div className="pl-6">{member.type}</div>
                     </div>
                 ))}
