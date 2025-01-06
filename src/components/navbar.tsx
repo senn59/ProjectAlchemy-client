@@ -3,9 +3,10 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/shadcn/theme-toggle";
 import { useAuth } from "@/auth/authprovider.tsx";
+import { Invitations } from "@/components/invitations.tsx";
 
 function Navbar() {
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
     const navigate = useNavigate();
 
     const signOut = () => {
@@ -22,7 +23,16 @@ function Navbar() {
                         <Button variant={"ghost"}>Projects</Button>
                     </Link>
                 </div>
-                <div className="pr-5 flex">
+                <div className="pr-5 flex items-center">
+                    <div className="mr-4 text-sm w-max">
+                        <span className="font-bold text-muted-foreground">
+                            Logged in:
+                        </span>{" "}
+                        <span className="">{user?.email}</span>
+                    </div>
+                    <div className="mr-4">
+                        <Invitations />
+                    </div>
                     <div className="mr-4">
                         <ModeToggle />
                     </div>

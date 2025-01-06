@@ -11,7 +11,7 @@ import { ENDPOINTS } from "@/endpoints.ts";
 import { useToast } from "@/hooks/use-toast.ts";
 import api from "@/api.ts";
 import { ReactNode, useContext, useState } from "react";
-import { ProjectContext } from "@/projects/context.ts";
+import { ProjectContext } from "@/projects/project-provider.tsx";
 import {
     LucideBug,
     LucideClipboardCheck,

@@ -1,58 +1,41 @@
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import api from "@/api.ts";
-import { ProjectResponse } from "@/projects/types.ts";
+import { Link, useParams } from "react-router-dom";
+import { useContext } from "react";
 import { IssuesTable } from "@/issues/issues-table.tsx";
-import { ENDPOINTS } from "@/endpoints.ts";
-import { ProjectContext } from "@/projects/context.ts";
-import { toast } from "@/hooks/use-toast.ts";
-import { Loader } from "@/components/Loader.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import { ProjectContext } from "@/projects/project-provider.tsx";
+import { useAuth } from "@/auth/authprovider.tsx";
+import { memberType } from "@/projects/types.ts";
+import { MembersPopover } from "@/projects/members-popover.tsx";
 
 export default function Project() {
+    const { project } = useContext(ProjectContext);
+    const { user } = useAuth();
     const { id } = useParams();
-    const [project, setProject] = useState<ProjectResponse>(
-        {} as ProjectResponse,
-    );
 
-    const [loading, setLoading] = useState<boolean>(true);
-
-    useEffect(() => {
-        if (id) {
-            api.get(ENDPOINTS.PROJECT_WITH_ID(id))
-                .then((r) => {
-                    setProject(r.data);
-                    setLoading(false);
-                })
-                .catch((err) => {
-                    toast({
-                        variant: "destructive",
-                        title: "Error while creating project",
-                        description: err?.message,
-                    });
-                });
-        }
-    }, [id]);
-
-    return !loading ? (
-        <ProjectContext.Provider value={{ project, setProject }}>
-            <div className="flex grow justify-center">
-                <div className="w-2/3 mt-12">
-                    {Object.keys(project).length > 0 && (
-                        <>
+    return (
+        <div className="flex grow justify-center relative">
+            <div className="w-2/3 mt-28">
+                {Object.keys(project).length > 0 && (
+                    <>
+                        <div className="flex justify-between items-end">
                             <h1 className="text-3xl font-extrabold">
                                 {project.name}
                             </h1>
-                            <div className="my-12">
-                                <IssuesTable />
-                            </div>
-                        </>
-                    )}
-                </div>
+                            {project.members.find((m) => m.userId === user?.id)
+                                ?.type === memberType.Owner ? (
+                                <Link to={`/projects/${id}/settings`}>
+                                    <Button>Go to settings</Button>
+                                </Link>
+                            ) : (
+                                <MembersPopover members={project.members} />
+                            )}
+                        </div>
+                        <div className="my-12">
+                            <IssuesTable />
+                        </div>
+                    </>
+                )}
             </div>
-        </ProjectContext.Provider>
-    ) : (
-        <div className="flex grow justify-center items-center">
-            <Loader />
         </div>
     );
 }

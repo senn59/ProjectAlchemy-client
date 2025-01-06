@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import api from "@/api.ts";
 import { toast } from "@/hooks/use-toast.ts";
-import { ProjectContext } from "@/projects/context.ts";
+import { ProjectContext } from "@/projects/project-provider.tsx";
 import { columns } from "@/issues/columns.tsx";
 
 export function IssuesTable() {
@@ -31,7 +31,7 @@ export function IssuesTable() {
 
     const [newItemName, setNewItemName] = useState("");
     const [isAddingNew, setIsAddingNew] = useState(false);
-    const { project, setProject } = useContext(ProjectContext);
+    const { project /*setProject*/ } = useContext(ProjectContext);
 
     const handleAddNew = () => {
         setIsAddingNew(true);
@@ -49,12 +49,15 @@ export function IssuesTable() {
             type: IssueType.Task,
             laneId: project.lanes[0].id,
         })
-            .then((res) => {
-                const newIssue = res.data as PartialIssue;
-                setProject((prev) => ({
-                    ...prev,
-                    issues: [...(prev.issues || []), newIssue],
-                }));
+            .then((/*res*/) => {
+                //Skip this update for now and receive from websockets
+                // const newIssue = res.data as PartialIssue;
+                // if (!project.issues.find((i) => i.key == newIssue.key)) {
+                //     setProject((prev) => ({
+                //         ...prev,
+                //         issues: [...(prev.issues || []), newIssue],
+                //     }));
+                // }
             })
             .catch((error) => {
                 toast({

@@ -16,9 +16,24 @@ export interface ProjectResponse {
     name: string;
     lanes: Lane[];
     issues: PartialIssue[];
+    members: Member[];
+}
+
+export interface Member {
+    userId: string;
+    type: memberType;
 }
 
 export interface Lane {
     id: string;
     name: string;
+}
+
+export interface InvitationSentView {
+    invitationId: string;
+    email: string;
+}
+export interface Invitation {
+    invitationId: string;
+    projectName: string;
 }
