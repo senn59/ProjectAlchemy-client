@@ -42,6 +42,9 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
 
     const nameFormSchema = z.string().min(1).max(30);
     const descriptionFormSchema = z.string().max(200);
+    useEffect(() => {
+        console.log(props.issue);
+    }, [props.issue]);
 
     useEffect(() => {
         if (websocket) {
@@ -117,6 +120,22 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
         }
     };
 
+    const updateIssue = <K extends keyof PartialIssue>(
+        id: number,
+        field: K,
+        value: PartialIssue[K],
+    ) => {
+        setProject((prev) => ({
+            ...prev,
+            issues: prev.issues.map((issue) => {
+                if (issue.key === id) {
+                    issue[field] = value;
+                }
+                return issue;
+            }),
+        }));
+    };
+
     const handleSave = (field: string) => {
         if (fieldError) {
             return;
@@ -130,24 +149,12 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                 value: issue[issueField],
             },
         ];
-        const updateIssue = <K extends keyof PartialIssue>(
-            id: number,
-            field: K,
-            value: PartialIssue[K],
-        ) => {
-            setProject((prev) => ({
-                ...prev,
-                issues: prev.issues.map((issue) => {
-                    if (issue.key === id) {
-                        issue[field] = value;
-                    }
-                    return issue;
-                }),
-            }));
-        };
 
         api.patch(ENDPOINTS.ISSUE_WITH_ID(issue.key, project.id), request)
             .then((res) => {
+                if (issueField === "relatedIssus") {
+                    return;
+                }
                 const updatedIssue = res.data as Issue;
                 updateIssue(
                     issue.key,
