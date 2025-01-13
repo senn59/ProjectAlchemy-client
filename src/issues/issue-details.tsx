@@ -18,6 +18,7 @@ import { toast } from "@/hooks/use-toast.ts";
 import { ProjectContext } from "@/projects/project-provider.tsx";
 import { IssueLaneSelect } from "@/issues/issue-lane-select.tsx";
 import { z } from "zod";
+import { IssueLinking } from "./issue-link-linking";
 
 interface IssueTypeSelectProps {
     issue: Issue;
@@ -39,12 +40,10 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
     });
     const { project, setProject, websocket } = useContext(ProjectContext);
     const [confirming, setConfirming] = useState<boolean>(false);
+    const [isOpenLinkDialog, setOpenLinkDialog] = useState(false);
 
     const nameFormSchema = z.string().min(1).max(30);
     const descriptionFormSchema = z.string().max(200);
-    useEffect(() => {
-        console.log(props.issue);
-    }, [props.issue]);
 
     useEffect(() => {
         if (websocket) {
@@ -279,6 +278,16 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                             key={issue.lane.name}
                         />
                     </div>
+                    <div>
+                        <Button onClick={() => setOpenLinkDialog(true)}>
+                            Link issue
+                        </Button>
+                    </div>
+                    <IssueLinking
+                        isOpen={isOpenLinkDialog}
+                        onOpenChange={setOpenLinkDialog}
+                        issueKey={issue.key}
+                    />
                 </div>
                 <div className="absolute bottom-8 right-8">
                     <Button
