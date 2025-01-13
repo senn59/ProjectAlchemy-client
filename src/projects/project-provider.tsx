@@ -49,20 +49,23 @@ export function ProjectProvider() {
     }, [id]);
 
     useEffect(() => {
-        const newConnection = new signalR.HubConnectionBuilder()
-            .withUrl(
-                `http://localhost:5297/projectHub?projectId=${project.id}`,
-                {
-                    accessTokenFactory: () => jwt ?? "",
-                    skipNegotiation: true,
-                    transport: signalR.HttpTransportType.WebSockets,
-                },
-            )
-            .withAutomaticReconnect()
-            .build();
-        newConnection.start().then(() => {
-            setWebsocket(newConnection);
-        });
+        if (project.id) {
+            const newConnection = new signalR.HubConnectionBuilder()
+                .withUrl(
+                    `http://localhost:5297/projectHub?projectId=${project.id}`,
+                    {
+                        accessTokenFactory: () => jwt ?? "",
+                        skipNegotiation: true,
+                        transport: signalR.HttpTransportType.WebSockets,
+                    },
+                )
+                .withAutomaticReconnect()
+                .configureLogging(signalR.LogLevel.Error)
+                .build();
+            newConnection.start().then(() => {
+                setWebsocket(newConnection);
+            });
+        }
     }, [jwt, project.id]);
 
     useEffect(() => {
