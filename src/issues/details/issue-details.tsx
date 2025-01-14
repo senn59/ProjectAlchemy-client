@@ -17,12 +17,12 @@ import { ProjectContext } from "@/projects/project-provider.tsx";
 import { IssueLaneSelect } from "@/issues/issue-lane-select.tsx";
 import { NameEdit } from "./name-edit";
 import { DescriptionEdit } from "./description-edit";
+import { DeleteBtn } from "./delete-btn";
 
 export default function IssueDetails({ issueKey }: { issueKey: number }) {
     const [issue, setIssue] = useState<Issue>();
-    const { project, setProject, websocket, setActiveIssue, setIssueToLink } =
+    const { project, websocket, setActiveIssue, setIssueToLink } =
         useContext(ProjectContext);
-    const [confirming, setConfirming] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchIssue = async () => {
@@ -54,37 +54,6 @@ export default function IssueDetails({ issueKey }: { issueKey: number }) {
             });
         }
     }, [websocket]);
-
-    const handleDeleteClick = () => {
-        if (confirming && issue) {
-            api.delete(ENDPOINTS.ISSUE_WITH_ID(issue.key, project.id))
-                .then(() => {
-                    setProject((prev) => ({
-                        ...prev,
-                        issues: prev.issues.filter((i) => {
-                            if (i.key != issue?.key) {
-                                return i;
-                            }
-                        }),
-                    }));
-                    setActiveIssue(null);
-                    toast({
-                        title: "Success",
-                        description: "Successfully deleted issue!",
-                    });
-                })
-                .catch((e) => {
-                    toast({
-                        title: "Error while deleting issue",
-                        description: e.message,
-                        variant: "destructive",
-                    });
-                });
-            setConfirming(false);
-        } else {
-            setConfirming(true);
-        }
-    };
 
     return (
         <Sheet open={true} onOpenChange={() => setActiveIssue(null)}>
@@ -143,13 +112,10 @@ export default function IssueDetails({ issueKey }: { issueKey: number }) {
                             </div>
                         </div>
                         <div className="absolute bottom-8 right-8">
-                            <Button
-                                onClick={handleDeleteClick}
-                                onBlur={() => setConfirming(false)}
-                                variant="destructive"
-                            >
-                                {!confirming ? "Delete" : "Are you sure?"}
-                            </Button>
+                            <DeleteBtn
+                                issueKey={issue.key}
+                                projectId={project.id}
+                            />
                         </div>
                     </>
                 ) : (
