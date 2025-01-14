@@ -18,6 +18,7 @@ import { IssueLaneSelect } from "@/issues/issue-lane-select.tsx";
 import { NameEdit } from "./name-edit";
 import { DescriptionEdit } from "./description-edit";
 import { DeleteBtn } from "./delete-btn";
+import { Loader } from "@/components/Loader";
 
 export default function IssueDetails({ issueKey }: { issueKey: number }) {
     const [issue, setIssue] = useState<Issue>();
@@ -98,7 +99,7 @@ export default function IssueDetails({ issueKey }: { issueKey: number }) {
                                     key={issue.lane.name}
                                 />
                             </div>
-                            <div>
+                            <div className="mt-10">
                                 <Button
                                     onClick={() =>
                                         setIssueToLink({
@@ -119,7 +120,13 @@ export default function IssueDetails({ issueKey }: { issueKey: number }) {
                         </div>
                     </>
                 ) : (
-                    <div>Loading</div>
+                    <SheetHeader>
+                        <SheetTitle>Loading</SheetTitle>
+                        <SheetDescription>Loading issue</SheetDescription>
+                        <div className="flex justify-center items-center h-screen">
+                            <Loader />
+                        </div>
+                    </SheetHeader>
                 )}
             </SheetContent>
         </Sheet>

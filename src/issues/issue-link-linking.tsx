@@ -41,10 +41,6 @@ export function IssueLinking() {
         }
     };
 
-    const handleLink = () => {
-        setIssueToLink(null);
-    };
-
     return (
         issueToLink && (
             <CommandDialog
@@ -107,7 +103,7 @@ export function IssueLinking() {
                         <Button
                             size="sm"
                             disabled={selectedIssues.length < 1}
-                            onClick={() => handleLink()}
+                            onClick={() => setIssueToLink(null)}
                         >
                             Link issues
                         </Button>

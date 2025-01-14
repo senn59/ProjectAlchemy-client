@@ -47,7 +47,6 @@ export function Invitations() {
     };
 
     const accept = (invitation: Invitation) => {
-        console.log(invitation.invitationId);
         api.post(
             ENDPOINTS.INVITATIONS_WITH_ID(invitation.invitationId) + "/accept",
         )

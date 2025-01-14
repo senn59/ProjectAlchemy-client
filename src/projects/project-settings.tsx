@@ -79,7 +79,6 @@ export function ProjectSettings() {
                 setInvitations((prev) => [...prev, r.data]);
             })
             .catch((e) => {
-                console.log(e);
                 let description = e.message;
                 if (e.status == 422) {
                     description = "Invitation for that email already exists";
@@ -116,7 +115,6 @@ export function ProjectSettings() {
         api.get(ENDPOINTS.PROJECT_INVITATIONS(project.id))
             .then((r) => {
                 setInvitations(r.data);
-                console.log(r.data);
             })
             .catch((e) =>
                 toast({
