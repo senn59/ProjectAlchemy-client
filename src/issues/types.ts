@@ -20,3 +20,8 @@ export enum IssueType {
     UserStory = "UserStory",
     Bug = "Bug",
 }
+
+export interface IssueToLink {
+    key: number;
+    name: string;
+}

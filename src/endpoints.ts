@@ -9,4 +9,6 @@ export const ENDPOINTS = {
         `${ENDPOINTS.PROJECT_WITH_ID(id)}/invitations`,
     INVITATIONS: "/invitations",
     INVITATIONS_WITH_ID: (id: string) => ENDPOINTS.INVITATIONS + "/" + id,
+    PROJECT_WEBSOCKET: (projectId: string) =>
+        `http://localhost:5297/projectHub?projectId=${projectId}`,
 };

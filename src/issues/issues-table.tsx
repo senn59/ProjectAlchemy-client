@@ -14,10 +14,9 @@ import {
     TableRow,
 } from "@/components/ui/table";
 
-import { FormEvent, KeyboardEvent, useContext, useState } from "react";
-import { Issue, PartialIssue, IssueType } from "@/issues/types.ts";
+import { FormEvent, useContext, useEffect, useState } from "react";
+import { PartialIssue, IssueType } from "@/issues/types.ts";
 import { ENDPOINTS } from "@/endpoints.ts";
-import IssueDetails from "@/issues/issue-details.tsx";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import api from "@/api.ts";
@@ -26,12 +25,9 @@ import { ProjectContext } from "@/projects/project-provider.tsx";
 import { columns } from "@/issues/columns.tsx";
 
 export function IssuesTable() {
-    const [selectedRow, setSelectedRow] = useState<Issue | null>(null);
-    const [isOpenSheet, setIsOpenSheet] = useState(false);
-
     const [newItemName, setNewItemName] = useState("");
     const [isAddingNew, setIsAddingNew] = useState(false);
-    const { project /*setProject*/ } = useContext(ProjectContext);
+    const { project, setActiveIssue, activeIssue } = useContext(ProjectContext);
 
     const handleAddNew = () => {
         setIsAddingNew(true);
@@ -48,76 +44,36 @@ export function IssuesTable() {
             name: newItemName,
             type: IssueType.Task,
             laneId: project.lanes[0].id,
-        })
-            .then((/*res*/) => {
-                //Skip this update for now and receive from websockets
-                // const newIssue = res.data as PartialIssue;
-                // if (!project.issues.find((i) => i.key == newIssue.key)) {
-                //     setProject((prev) => ({
-                //         ...prev,
-                //         issues: [...(prev.issues || []), newIssue],
-                //     }));
-                // }
-            })
-            .catch((error) => {
-                toast({
-                    variant: "destructive",
-                    title: "Error creating issue!",
-                    description: error.message,
-                });
+        }).catch((error) => {
+            toast({
+                variant: "destructive",
+                title: "Error creating issue!",
+                description: error.message,
             });
+        });
     };
-
-    const handleKeyPressNew = (event: KeyboardEvent) => {
-        if (event.key === "Escape") {
-            setIsAddingNew(false);
-        }
-    };
-
     const table = useReactTable({
         data: project.issues,
         columns,
         getCoreRowModel: getCoreRowModel(),
     });
 
-    const openRow = async (row: Row<PartialIssue>) => {
+    const openRow = (row: Row<PartialIssue>) => {
         table.toggleAllPageRowsSelected(false);
         row.toggleSelected();
         if (!row.getIsSelected()) {
-            setIsOpenSheet(true);
-            const rowData = row.original as PartialIssue;
-            setSelectedRow((await getIssueData(rowData.key)) ?? null);
+            setActiveIssue(row.original.key);
         }
     };
 
-    const handleSheetChange = () => {
-        table.toggleAllPageRowsSelected(false);
-        setIsOpenSheet(false);
-        setSelectedRow(null);
-    };
-
-    const getIssueData = async (id: number): Promise<Issue | void> => {
-        return api
-            .get<Issue>(ENDPOINTS.ISSUE_WITH_ID(id, project.id))
-            .then((res) => res.data)
-            .catch((error) => {
-                toast({
-                    variant: "destructive",
-                    title: "Error retrieving issue!",
-                    description: error.message,
-                });
-            });
-    };
+    useEffect(() => {
+        if (!activeIssue) {
+            table.toggleAllPageRowsSelected(false);
+        }
+    }, [activeIssue]);
 
     return (
         <div className="rounded-md border">
-            {selectedRow != null && (
-                <IssueDetails
-                    issue={selectedRow}
-                    isOpen={isOpenSheet}
-                    onOpenChange={handleSheetChange}
-                />
-            )}
             <Table>
                 <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
@@ -185,7 +141,11 @@ export function IssuesTable() {
                                             setNewItemName(e.target.value)
                                         }
                                         onBlur={() => setIsAddingNew(false)}
-                                        onKeyDown={handleKeyPressNew}
+                                        onKeyDown={(event) => {
+                                            if (event.key === "Escape") {
+                                                setIsAddingNew(false);
+                                            }
+                                        }}
                                         className="flex-grow"
                                         autoFocus
                                     />

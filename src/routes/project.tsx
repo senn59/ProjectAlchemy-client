@@ -1,41 +1,23 @@
-import { Link, useParams } from "react-router-dom";
-import { useContext } from "react";
-import { IssuesTable } from "@/issues/issues-table.tsx";
-import { Button } from "@/components/ui/button.tsx";
-import { ProjectContext } from "@/projects/project-provider.tsx";
-import { useAuth } from "@/auth/authprovider.tsx";
-import { memberType } from "@/projects/types.ts";
-import { MembersPopover } from "@/projects/members-popover.tsx";
+import { useParams } from "react-router-dom";
+import IssueDetails from "@/issues/issue-details";
+import { ProjectOverview } from "@/projects/project-overview";
+import { useContext, useEffect } from "react";
+import { ProjectContext } from "@/projects/project-provider";
+import { IssueLinking } from "@/issues/issue-link-linking";
 
 export default function Project() {
-    const { project } = useContext(ProjectContext);
-    const { user } = useAuth();
+    const { activeIssue, issueToLink } = useContext(ProjectContext);
     const { id } = useParams();
+    useEffect(() => {
+        console.log(activeIssue);
+    }, [activeIssue]);
 
     return (
-        <div className="flex grow justify-center relative">
-            <div className="w-2/3 mt-28">
-                {Object.keys(project).length > 0 && (
-                    <>
-                        <div className="flex justify-between items-end">
-                            <h1 className="text-3xl font-extrabold">
-                                {project.name}
-                            </h1>
-                            {project.members.find((m) => m.userId === user?.id)
-                                ?.type === memberType.Owner ? (
-                                <Link to={`/projects/${id}/settings`}>
-                                    <Button>Go to settings</Button>
-                                </Link>
-                            ) : (
-                                <MembersPopover members={project.members} />
-                            )}
-                        </div>
-                        <div className="my-12">
-                            <IssuesTable />
-                        </div>
-                    </>
-                )}
-            </div>
-        </div>
+        <>
+            {activeIssue && <div>Test</div>}
+            {activeIssue && <IssueDetails issueKey={activeIssue} />}
+            {id && <ProjectOverview id={id} />}
+            {issueToLink && <IssueLinking />}
+        </>
     );
 }

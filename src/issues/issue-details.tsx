@@ -18,37 +18,41 @@ import { toast } from "@/hooks/use-toast.ts";
 import { ProjectContext } from "@/projects/project-provider.tsx";
 import { IssueLaneSelect } from "@/issues/issue-lane-select.tsx";
 import { z } from "zod";
-import { IssueLinking } from "./issue-link-linking";
 
-interface IssueTypeSelectProps {
-    issue: Issue;
-    isOpen: boolean;
-    onOpenChange: (isOpen: boolean) => void;
-}
-
-export default function IssueDetails(props: IssueTypeSelectProps) {
-    const [issue, setIssue] = useState<Issue>(props.issue);
-    const textareaRef = useRef<HTMLTextAreaElement>(null);
-    // const [editableFields, setEditableFields] = useState<EditableFields>({
-    //     name: issue.name,
-    //     description: issue.description,
-    // });
+export default function IssueDetails({ issueKey }: { issueKey: number }) {
+    const [issue, setIssue] = useState<Issue>();
     const [fieldError, setFieldError] = useState<string>("");
-    const [isEditing, setEditing] = useState<Record<string, boolean>>({
+    const [isEditing, setEditing] = useState({
         name: false,
         description: false,
     });
-    const { project, setProject, websocket } = useContext(ProjectContext);
+    const { project, setProject, websocket, setActiveIssue, setIssueToLink } =
+        useContext(ProjectContext);
     const [confirming, setConfirming] = useState<boolean>(false);
-    const [isOpenLinkDialog, setOpenLinkDialog] = useState(false);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     const nameFormSchema = z.string().min(1).max(30);
     const descriptionFormSchema = z.string().max(200);
 
     useEffect(() => {
+        const fetchIssue = async () => {
+            api.get<Issue>(ENDPOINTS.ISSUE_WITH_ID(issueKey, project.id))
+                .then((res) => setIssue(res.data))
+                .catch((error) => {
+                    toast({
+                        variant: "destructive",
+                        title: "Error retrieving issue!",
+                        description: error.message,
+                    });
+                });
+        };
+        fetchIssue();
+    }, []);
+
+    useEffect(() => {
         if (websocket) {
             websocket.on("IssueUpdate", (updated: Issue) => {
-                if (updated.key === issue.key) {
+                if (updated.key === issue?.key) {
                     setIssue({
                         ...issue,
                         ...updated,
@@ -56,9 +60,7 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
                 }
             });
             websocket.on("IssueDelete", (key: number) => {
-                if (issue.key === key) {
-                    props.onOpenChange(false);
-                }
+                if (issue?.key === key) setActiveIssue(null);
             });
         }
     }, [websocket]);
@@ -72,29 +74,29 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
 
     useEffect(() => {
         try {
-            nameFormSchema.parse(issue.name);
-            descriptionFormSchema.parse(issue.description);
+            nameFormSchema.parse(issue?.name);
+            descriptionFormSchema.parse(issue?.description);
             setFieldError("");
         } catch (e) {
             if (e instanceof z.ZodError) {
                 setFieldError(e.issues[0].message);
             }
         }
-    }, [issue.name, issue.description]);
+    }, [issue?.name, issue?.description]);
 
     const handleDeleteClick = () => {
-        if (confirming) {
+        if (confirming && issue) {
             api.delete(ENDPOINTS.ISSUE_WITH_ID(issue.key, project.id))
                 .then(() => {
                     setProject((prev) => ({
                         ...prev,
                         issues: prev.issues.filter((i) => {
-                            if (i.key != issue.key) {
+                            if (i.key != issue?.key) {
                                 return i;
                             }
                         }),
                     }));
-                    props.onOpenChange(false);
+                    setActiveIssue(null);
                     toast({
                         title: "Success",
                         description: "Successfully deleted issue!",
@@ -136,7 +138,7 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
     };
 
     const handleSave = (field: string) => {
-        if (fieldError) {
+        if (fieldError || !issue) {
             return;
         }
         setEditing({ ...isEditing, [field]: false });
@@ -177,127 +179,143 @@ export default function IssueDetails(props: IssueTypeSelectProps) {
     };
 
     return (
-        <Sheet open={props.isOpen} onOpenChange={props.onOpenChange}>
+        <Sheet open={true} onOpenChange={() => setActiveIssue(null)}>
             <SheetContent>
-                <SheetHeader>
-                    <SheetTitle>Issue {issue.key}</SheetTitle>
-                    <SheetDescription>
-                        A more detailed view of your issue.
-                    </SheetDescription>
-                </SheetHeader>
-                <div className={"mt-10"}>
-                    <div className={"sheet-field-cnt"}>
-                        <Label className={"pl-1"}>Name</Label>
-                        {isEditing["name"] ? (
-                            <>
-                                <Input
-                                    value={issue.name}
-                                    onBlur={() => handleSave("name")}
-                                    onKeyDown={(e) => handleKeyPress(e, "name")}
-                                    onChange={(e) =>
-                                        setIssue({
-                                            ...issue,
-                                            name: e.target.value,
-                                        })
-                                    }
-                                    autoFocus
-                                />
-                                {fieldError && (
-                                    <span className="text-sm font-medium text-destructive">
-                                        {fieldError}
-                                    </span>
+                {issue ? (
+                    <>
+                        <SheetHeader>
+                            <SheetTitle>Issue {issue.key}</SheetTitle>
+                            <SheetDescription>
+                                A more detailed view of your issue.
+                            </SheetDescription>
+                        </SheetHeader>
+                        <div className={"mt-10"}>
+                            <div className={"sheet-field-cnt"}>
+                                <Label className={"pl-1"}>Name</Label>
+                                {isEditing["name"] ? (
+                                    <>
+                                        <Input
+                                            value={issue.name}
+                                            onBlur={() => handleSave("name")}
+                                            onKeyDown={(e) =>
+                                                handleKeyPress(e, "name")
+                                            }
+                                            onChange={(e) =>
+                                                setIssue({
+                                                    ...issue,
+                                                    name: e.target.value,
+                                                })
+                                            }
+                                            autoFocus
+                                        />
+                                        {fieldError && (
+                                            <span className="text-sm font-medium text-destructive">
+                                                {fieldError}
+                                            </span>
+                                        )}
+                                    </>
+                                ) : (
+                                    <Button
+                                        variant={"ghost"}
+                                        className={"justify-start text-lg p-2"}
+                                        onClick={() => handleEditing("name")}
+                                    >
+                                        {issue.name}
+                                    </Button>
                                 )}
-                            </>
-                        ) : (
-                            <Button
-                                variant={"ghost"}
-                                className={"justify-start text-lg p-2"}
-                                onClick={() => handleEditing("name")}
-                            >
-                                {issue.name}
-                            </Button>
-                        )}
-                    </div>
-                    <div className={"sheet-field-cnt mt-10"}>
-                        <Label className={"pl-1"}>Description</Label>
-                        {isEditing["description"] ? (
-                            <>
-                                <Textarea
-                                    ref={textareaRef}
-                                    value={issue.description}
-                                    onBlur={() => handleSave("description")}
-                                    onKeyDown={(e) =>
-                                        handleKeyPress(e, "description")
-                                    }
-                                    onChange={(e) =>
-                                        setIssue({
-                                            ...issue,
-                                            description: e.target.value,
-                                        })
-                                    }
-                                    autoFocus
-                                />
-                                {fieldError && (
-                                    <span className="text-sm font-medium text-destructive">
-                                        {fieldError}
-                                    </span>
+                            </div>
+                            <div className={"sheet-field-cnt mt-10"}>
+                                <Label className={"pl-1"}>Description</Label>
+                                {isEditing["description"] ? (
+                                    <>
+                                        <Textarea
+                                            ref={textareaRef}
+                                            value={issue.description}
+                                            onBlur={() =>
+                                                handleSave("description")
+                                            }
+                                            onKeyDown={(e) =>
+                                                handleKeyPress(e, "description")
+                                            }
+                                            onChange={(e) =>
+                                                setIssue({
+                                                    ...issue,
+                                                    description: e.target.value,
+                                                })
+                                            }
+                                            autoFocus
+                                        />
+                                        {fieldError && (
+                                            <span className="text-sm font-medium text-destructive">
+                                                {fieldError}
+                                            </span>
+                                        )}
+                                    </>
+                                ) : (
+                                    <Button
+                                        variant={"ghost"}
+                                        className={`justify-start p-2`}
+                                        onClick={() =>
+                                            handleEditing("description")
+                                        }
+                                    >
+                                        <p
+                                            className={
+                                                issue.description
+                                                    ? ""
+                                                    : "opacity-50"
+                                            }
+                                        >
+                                            {issue.description
+                                                ? issue.description
+                                                : "Add description..."}
+                                        </p>
+                                    </Button>
                                 )}
-                            </>
-                        ) : (
-                            <Button
-                                variant={"ghost"}
-                                className={`justify-start p-2`}
-                                onClick={() => handleEditing("description")}
-                            >
-                                <p
-                                    className={
-                                        issue.description ? "" : "opacity-50"
+                            </div>
+                            <div className={"sheet-field-cnt mt-10"}>
+                                <Label className={"pl-1"}>Type</Label>
+                                <IssueTypeSelect
+                                    issueKey={issue.key}
+                                    currentType={issue.type}
+                                    compact={false}
+                                    key={issue.type}
+                                />
+                            </div>
+                            <div className="sheet-field-cnt mt-10">
+                                <Label>Status</Label>
+                                <IssueLaneSelect
+                                    issueKey={issue.key}
+                                    currentLane={issue.lane}
+                                    key={issue.lane.name}
+                                />
+                            </div>
+                            <div>
+                                <Button
+                                    onClick={() =>
+                                        setIssueToLink({
+                                            key: issue.key,
+                                            name: issue.name,
+                                        })
                                     }
                                 >
-                                    {issue.description
-                                        ? issue.description
-                                        : "Add description..."}
-                                </p>
+                                    Link issue
+                                </Button>
+                            </div>
+                        </div>
+                        <div className="absolute bottom-8 right-8">
+                            <Button
+                                onClick={handleDeleteClick}
+                                onBlur={() => setConfirming(false)}
+                                variant="destructive"
+                            >
+                                {!confirming ? "Delete" : "Are you sure?"}
                             </Button>
-                        )}
-                    </div>
-                    <div className={"sheet-field-cnt mt-10"}>
-                        <Label className={"pl-1"}>Type</Label>
-                        <IssueTypeSelect
-                            issueKey={issue.key}
-                            currentType={issue.type}
-                            compact={false}
-                            key={issue.type}
-                        />
-                    </div>
-                    <div className="sheet-field-cnt mt-10">
-                        <Label>Status</Label>
-                        <IssueLaneSelect
-                            issueKey={issue.key}
-                            currentLane={issue.lane}
-                            key={issue.lane.name}
-                        />
-                    </div>
-                    <div>
-                        <Button onClick={() => setOpenLinkDialog(true)}>
-                            Link issue
-                        </Button>
-                    </div>
-                    <IssueLinking
-                        isOpen={isOpenLinkDialog}
-                        onOpenChange={setOpenLinkDialog}
-                        issueKey={issue.key}
-                    />
-                </div>
-                <div className="absolute bottom-8 right-8">
-                    <Button
-                        onClick={handleDeleteClick}
-                        onBlur={() => setConfirming(false)}
-                        variant="destructive"
-                    >
-                        {!confirming ? "Delete" : "Are you sure?"}
-                    </Button>
-                </div>
+                        </div>
+                    </>
+                ) : (
+                    <div>Loading</div>
+                )}
             </SheetContent>
         </Sheet>
     );
