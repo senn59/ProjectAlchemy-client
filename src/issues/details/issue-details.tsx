@@ -19,6 +19,7 @@ import { NameEdit } from "./name-edit";
 import { DescriptionEdit } from "./description-edit";
 import { DeleteBtn } from "./delete-btn";
 import { Loader } from "@/components/Loader";
+import { LinkedIssues } from "./linked-issue";
 
 export default function IssueDetails({ issueKey }: { issueKey: number }) {
     const [issue, setIssue] = useState<Issue>();
@@ -100,6 +101,10 @@ export default function IssueDetails({ issueKey }: { issueKey: number }) {
                                 />
                             </div>
                             <div className="mt-10">
+                                <Label>Linked issues</Label>
+                                <LinkedIssues />
+                            </div>
+                            <div className="absolute bottom-8 left-8">
                                 <Button
                                     onClick={() =>
                                         setIssueToLink({
@@ -108,7 +113,7 @@ export default function IssueDetails({ issueKey }: { issueKey: number }) {
                                         })
                                     }
                                 >
-                                    Link issue
+                                    Link issues
                                 </Button>
                             </div>
                         </div>
