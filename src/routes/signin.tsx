@@ -87,6 +87,7 @@ export default function Signin() {
                                         <FormItem>
                                             <FormControl>
                                                 <Input
+                                                    data-test="email-input"
                                                     placeholder="Email"
                                                     {...field}
                                                 />
@@ -104,6 +105,7 @@ export default function Signin() {
                                         <FormItem>
                                             <FormControl>
                                                 <Input
+                                                    data-test="password-input"
                                                     placeholder="Password"
                                                     type="Password"
                                                     {...field}
@@ -114,7 +116,11 @@ export default function Signin() {
                                     )}
                                 />
                             </div>
-                            <Button className="w-full" type={"submit"}>
+                            <Button
+                                className="w-full"
+                                type={"submit"}
+                                data-test="signin-continue-button"
+                            >
                                 Continue
                             </Button>
                         </form>

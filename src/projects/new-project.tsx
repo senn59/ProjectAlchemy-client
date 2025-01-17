@@ -59,7 +59,9 @@ function NewProject() {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button>Create a new project</Button>
+                <Button data-test="create-new-project-button">
+                    Create a new project
+                </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
@@ -84,6 +86,7 @@ function NewProject() {
                                         </FormLabel>
                                         <FormControl>
                                             <Input
+                                                data-test="create-project-name-input"
                                                 {...field}
                                                 className="mt-2"
                                             />
@@ -94,7 +97,12 @@ function NewProject() {
                             ></FormField>
                         </div>
                         <DialogFooter>
-                            <Button type="submit">Create project</Button>
+                            <Button
+                                type="submit"
+                                data-test="create-project-button"
+                            >
+                                Create project
+                            </Button>
                         </DialogFooter>
                     </form>
                 </Form>

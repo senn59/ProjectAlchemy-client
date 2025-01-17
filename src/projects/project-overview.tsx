@@ -17,7 +17,10 @@ export function ProjectOverview({ id }: { id: string }) {
                 {Object.keys(project).length > 0 && (
                     <>
                         <div className="flex justify-between items-end">
-                            <h1 className="text-3xl font-extrabold">
+                            <h1
+                                className="text-3xl font-extrabold"
+                                data-test="project-name"
+                            >
                                 {project.name}
                             </h1>
                             {project.members.find((m) => m.userId === user?.id)

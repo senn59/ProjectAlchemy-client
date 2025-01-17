@@ -77,7 +77,10 @@ export function IssuesTable() {
             <Table>
                 <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
-                        <TableRow key={headerGroup.id}>
+                        <TableRow
+                            key={headerGroup.id}
+                            data-test="issue-table-row"
+                        >
                             {headerGroup.headers.map((header) => {
                                 return (
                                     <TableHead key={header.id}>
@@ -134,6 +137,7 @@ export function IssuesTable() {
                                     className="flex w-full"
                                 >
                                     <Input
+                                        data-test="new-issue-name-input"
                                         type="text"
                                         placeholder="Enter new item name"
                                         value={newItemName}
@@ -161,6 +165,7 @@ export function IssuesTable() {
                     onClick={handleAddNew}
                     disabled={isAddingNew}
                     className="w-full rounded-none"
+                    data-test="add-issue-button"
                 >
                     + Add issue
                 </Button>
