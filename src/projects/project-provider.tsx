@@ -7,24 +7,35 @@ import { toast } from "@/hooks/use-toast.ts";
 import { Loader } from "@/components/Loader.tsx";
 import * as signalR from "@microsoft/signalr";
 import { useAuth } from "@/auth/authprovider.tsx";
-import { Issue, PartialIssue } from "@/issues/types.ts";
+import { Issue, IssueToLink, PartialIssue } from "@/issues/types.ts";
 
 interface ProjectContextType {
     project: ProjectResponse;
     setProject: React.Dispatch<React.SetStateAction<ProjectResponse>>;
+    activeIssue: number | null;
+    setActiveIssue: React.Dispatch<React.SetStateAction<number | null>>;
+    issueToLink: IssueToLink | null;
+    setIssueToLink: React.Dispatch<React.SetStateAction<IssueToLink | null>>;
     websocket: signalR.HubConnection | null;
 }
 export const ProjectContext = createContext<ProjectContextType>({
     project: {} as ProjectResponse,
     setProject: () => {},
     websocket: null,
+    issueToLink: null,
+    setIssueToLink: () => {},
+    activeIssue: null,
+    setActiveIssue: () => {},
 });
+
 export function ProjectProvider() {
     const { id } = useParams();
     const { jwt } = useAuth();
     const [project, setProject] = useState<ProjectResponse>(
         {} as ProjectResponse,
     );
+    const [issueToLink, setIssueToLink] = useState<IssueToLink | null>(null);
+    const [activeIssue, setActiveIssue] = useState<number | null>(null);
 
     const [loading, setLoading] = useState<boolean>(true);
     const [websocket, setWebsocket] = useState<signalR.HubConnection | null>(
@@ -49,20 +60,20 @@ export function ProjectProvider() {
     }, [id]);
 
     useEffect(() => {
-        const newConnection = new signalR.HubConnectionBuilder()
-            .withUrl(
-                `http://localhost:5297/projectHub?projectId=${project.id}`,
-                {
+        if (project.id) {
+            const newConnection = new signalR.HubConnectionBuilder()
+                .withUrl(ENDPOINTS.PROJECT_WEBSOCKET(project.id), {
                     accessTokenFactory: () => jwt ?? "",
                     skipNegotiation: true,
                     transport: signalR.HttpTransportType.WebSockets,
-                },
-            )
-            .withAutomaticReconnect()
-            .build();
-        newConnection.start().then(() => {
-            setWebsocket(newConnection);
-        });
+                })
+                .withAutomaticReconnect()
+                .configureLogging(signalR.LogLevel.Error)
+                .build();
+            newConnection.start().then(() => {
+                setWebsocket(newConnection);
+            });
+        }
     }, [jwt, project.id]);
 
     useEffect(() => {
@@ -103,7 +114,17 @@ export function ProjectProvider() {
     }, [websocket]);
 
     return !loading ? (
-        <ProjectContext.Provider value={{ project, setProject, websocket }}>
+        <ProjectContext.Provider
+            value={{
+                project,
+                setProject,
+                websocket,
+                issueToLink,
+                setIssueToLink,
+                activeIssue,
+                setActiveIssue,
+            }}
+        >
             <Outlet />
         </ProjectContext.Provider>
     ) : (

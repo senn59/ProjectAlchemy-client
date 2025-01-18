@@ -43,6 +43,7 @@ export default function Index() {
                         <Link
                             to="/auth/signin"
                             className="font-bold hover:underline"
+                            data-test="signin-button"
                         >
                             Sign in
                         </Link>

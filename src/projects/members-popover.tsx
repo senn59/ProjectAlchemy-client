@@ -1,5 +1,4 @@
 import { Member } from "@/projects/types.ts";
-import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Popover,
@@ -12,10 +11,6 @@ interface MembersPopoverProps {
 }
 
 export function MembersPopover({ members }: MembersPopoverProps) {
-    useEffect(() => {
-        console.log(members);
-    }, [members]);
-
     return (
         <Popover>
             <PopoverTrigger asChild>
@@ -23,7 +18,7 @@ export function MembersPopover({ members }: MembersPopoverProps) {
             </PopoverTrigger>
             <PopoverContent className="w-max text-sm">
                 {members.map((member) => (
-                    <div className="flex justify-between">
+                    <div className="flex justify-between" key={member.userId}>
                         <div>{member.userName}</div>
                         <div className="pl-6">{member.type}</div>
                     </div>

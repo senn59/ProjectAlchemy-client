@@ -76,7 +76,10 @@ function Projects() {
                                     </TableCell>
                                     <TableCell className="font-medium text-right">
                                         <Link to={`../projects/${p.projectId}`}>
-                                            <Button variant="outline">
+                                            <Button
+                                                variant="outline"
+                                                data-test="open-project-button"
+                                            >
                                                 Open
                                             </Button>
                                         </Link>
